@@ -15,7 +15,7 @@ delay(int i)
 
 #define FW_ADDRESS      0xFF810000
 
-void scan() {
+void main() {
 	for (; ; ) {
 		LEDRED = LEDON;
 		delay(1 << 14);

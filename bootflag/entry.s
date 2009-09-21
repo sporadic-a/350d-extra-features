@@ -4,4 +4,4 @@
 
 _start:
 
-    B	scan
+    B	main
