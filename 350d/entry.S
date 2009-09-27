@@ -94,30 +94,30 @@ loc_FF810148:
 		LDR	PC, =my_romStart		// romStart
 
 // ==========================================
-
-my_LedRedOn:
-		LDR	R0, =0xC02200A0
-		LDR	R1, =0x46
-		STR	R1, [R0]
-		MOV	PC, LR
-
-my_LedRedOff:
-		LDR	R0, =0xC02200A0
-		LDR	R1, =0x44
-		STR	R1, [R0]
-		MOV	PC, LR
-
-my_LedBlueOn:
-		LDR	R0, =0xC0220000
-		LDR	R1, =0x46
-		STR	R1, [R0]
-		MOV	PC, LR
-
-my_LedBlueOff:
-		LDR	R0, =0xC0220000
-		LDR	R1, =0x44
-		STR	R1, [R0]
-		MOV	PC, LR
+//
+//my_LedRedOn:
+//		LDR	R0, =0xC02200A0
+//		LDR	R1, =0x46
+//		STR	R1, [R0]
+//		MOV	PC, LR
+//
+//my_LedRedOff:
+//		LDR	R0, =0xC02200A0
+//		LDR	R1, =0x44
+//		STR	R1, [R0]
+//		MOV	PC, LR
+//
+//my_LedBlueOn:
+//		LDR	R0, =0xC0220000
+//		LDR	R1, =0x46
+//		STR	R1, [R0]
+//		MOV	PC, LR
+//
+//my_LedBlueOff:
+//		LDR	R0, =0xC0220000
+//		LDR	R1, =0x44
+//		STR	R1, [R0]
+//		MOV	PC, LR
 
 // ==========================================
 
@@ -138,7 +138,7 @@ my_usrInit:
 		MOV	R4, R0
 		SUB	SP, SP,	#8
 		LDR	R5, =0x1EFF0
-		BL	sub_FF810454
+		BL	sysHwInit0
 		LDR	R0, =0xD820
 		RSB	R1, R0,	R5
 		BL	sub_FFA5234C
@@ -150,7 +150,7 @@ my_usrInit:
 		MOV	R0, #1
 		BL	cacheLibInit
 		BL	excVecInit
-		BL	sub_FF81048C
+		BL	sysHwInit
 		MOV	R0, #0
 		BL	cacheEnable
 		MOV	R0, #1
@@ -380,7 +380,7 @@ my_task_Startup:
 		BL	DefsInit
 		BL	WBDetectionInit
 		BL	sub_FF926AE0
-		BL	sub_FF93C0D4
+		BL	DevelopParamInit
 		BL	sub_FF940488
 		BL	HuffmanInit
 		BL	sub_FF93E5D0
@@ -453,7 +453,7 @@ my_task_Startup:
 		BL	sub_FF88C008
 		BL	sub_FF8834A8
 		BL	sub_FF8834A8
-		BL	GUIInit
+		BL	my_GUIInit
 		BL	sub_FF82D80C
 		BL	sub_FF839394
 		BL	ColorBarInit
@@ -522,7 +522,7 @@ my_task_Startup:
 		BL	sub_FFA28038
 		ADD	SP, SP,	#4
 		LDR	PC, [SP],#4
-                MOV     PC, LR				// RET
+		MOV     PC, LR				// RET
 
 .align 2
 fin:
