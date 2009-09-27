@@ -13,10 +13,12 @@ $(name).BIN: $(name).arm.elf
 	$(OBJCOPY) -O binary $(name).arm.elf $(name).BIN
 #	cp $(name).BIN I:\\$(name).BIN
 
-$(name).arm.elf:entry.o entry_subs.o init.o main.o link.script
+$(name).arm.elf:entry.o entry_subs.o gui.o init.o main.o link.script
 	$(CC) $(CFLAGS) -Wl,-T,link.script -o$@ $^
 
 entry.o:entry.S
+
+gui.o:gui.S
 
 main.o:main.c
 
