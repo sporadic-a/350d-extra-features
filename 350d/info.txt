@@ -1,0 +1,286 @@
+//Button Value
+// 0x89:		power on
+// 0x92:		close battery door
+// 0xa0:		menu
+// 0xa1:		info.	(400D: jump?)
+// 0xa4:		play
+// ?0xa5:		trash(?)
+// 0xa6:		set
+// 0xa7:        zoom-in
+// 0xa8:        zoom-out
+// 0xb1:		up
+// 0xb2:		down
+// 0xb3:		right
+// 0xb4:		left
+// 0xb8:		direct print
+// ?0xb9:		disp. ? or focus frame
+// ?0xba:		drive mode
+// ?0xbb:		AV+-
+// 0x90-0x93:	Mode Dial Tv Av M aDep
+
+// 350D: 0x142b8  400D: 0x16b60
+// Camera Mode
+//---------------0x142b8 store value (same as 0x25E20 for 400D) ---------------------
+//AeValue address 0x142b8+0x00
+        //0: P
+        //1: Tv
+        //2: Av
+        //3: M
+        //4: unknow1
+        //5: A-DEP
+        //8: Full Auto (Green rectangular)
+//MesureValue address 0x142b8+0x04
+        //3 Spot
+        //0 Evaluative
+//Unknown1[1] address 0x142b8+0x08
+//Drive mode address 0x142b8+0x0c
+        //0 Single shooting
+        //1 Continuous shooting
+//Unknown2[2] address 0x142b8+0x10, 0x142b8+0x14
+//? +0x18       AF set
+//TvValue address 0x142b8+0x1c
+//AvValue address 0x142b8+0x20
+//AvComp Value address 0x142b8+0x24 
+	//0	0
+	//0x03	0.3
+	//0x05	0.7
+	//0x08	1
+	//0x0b	1.3
+	//0x0d	1.7
+	//0x10	2
+	//0xfd	-0.3
+	//0xfb	-0.7
+	//0xf8	-1
+	//0xf5	-1.3
+	//0xf3	-1.7
+	//0xf0	-2
+//IsoValue address 0x142b8+0x28
+//Unknown4[1] address 0x142b8+0x2c
+//AebValue address 0x142b8+0x30
+	//0	0
+	//0x03	+-0.3
+	//0x05	+-0.7
+	//0x08	+-1
+	//0x0b	+-1.3
+	//0x0d	+-1.7
+	//0x10	+-2
+//Unknown5[1] address 0x142b8+0x34
+//? +0x38       0 beep off, 1 beep on
+//Unknown6[13] address 0x142b8+0x3c,+0x40,+0x44,+0x48,+0x4c,+0x50,+0x54,+0x58,+0x5c,+0x60,+0x64,+0x68,+0x6c
+//Parameter Set1 address 0x142b8+0x70
+//Parameter Set2 address 0x142b8+0x74
+//Parameter Set3 address 0x142b8+0x78
+//Parameter SetBW address 0x142b8+0x7c
+//Image Recording(RAW or NOT ) address 0x142b8+0x84
+//Image Recording(SIZE L,M,S ) address 0x142b8+0x88
+//Image Recording(Fine Or Medium JPEG ) address 0x142b8+0x8c
+	//L Fine -> 1,0,0
+	//M Fine -> 1,1,0
+	//S Fine -> 1,2,0
+	//L Medium -> 1,0,1
+	//M Medium -> 1,0,2
+	//S Medium -> 1,0,3
+	//RAW Only -> 2,0,0
+	//L+RAW Fine -> 3,0,0
+	//M+RAW Fine -> 3,1,0 (Not Work)
+	//S+RAW Fine -> 3,2,0 (Not Work)
+	//L+RAW Medium -> 3,0,1 (Not Work)
+	//M+RAW Medium -> 3,1,1 (Not Work)
+	//S+RAW Medium -> 3,2,1 (Not Work)
+	
+//? +0x90
+//? +0xa8
+
+// 0xe7e0 MainPreserveData
+// +0x00:
+// +0x02:
+// +0x04:
+// +0x06:
+// +0x08:
+// +0x0c:       ReleaseCount
+// +0x10:
+// +0x11:
+
+// CFn - Emit Flash Address 0x142b8+0xbc
+
+
+//-----------------------==SetPropertie
+// SendToIntercom(int key, int oldVal?, int newVal)
+// key:
+// 0x01:        AE mode                                         oldVal,newVal
+// 0x02:        Metering mode                           oldVal,newVal
+// 0x02:        AF mode                                         oldVal,newVal?
+// 0x04:        Drive mode                                      oldVal,newVal
+// 0x08:        Tv                                                      oldVal,newVal
+// 0x09:        Av                                                      oldVal,newVal
+// 0x0a:        AVComp value                            oldVal,newVal
+// 0x0b:        Iso                                                     oldVal,newVal
+// 0x1c:        SelectProcParam                         1,newVal
+// 0x1d:        SetProcParam: Set 1             4,newVal
+// 0x1e:        SetProcParam: Set 2             4,newVal
+// 0x1f:        SetProcParam: Set 3             4,newVal
+// 0x20:        SetProcParam: B/W                       4,newVal
+// 0x21:        Color space                                     1,newVal
+// 0x2a-3b      CFn1-18                                         1,newVal
+// 0x3d:        see eventproc_SendCommand       *
+// 0x50:
+// 0x51:
+// 0x52:        Shutdown                                        0,0
+// 0x53:        Release                                         0,0
+// 0x54:
+// 0x55:
+// 0x59:
+// 0x5a:
+// 0x5f:
+// 0x60:
+// 0x61:
+// 0x62:
+// 0x69:
+// 0x6b:
+// 0x6d:        Release                                         1,1
+// 0x73:
+
+//SendToIntercom(0x1,1,1); //(0x0,1,2);  Zonedial mode P TV AV....
+//SendToIntercom(0x2,1,1); //(0x2,1,0);  Meter mode Eval, Center...
+//SendToIntercom(0x3,1,1); //(0x3,1,0);  Flash ex comp
+//SendToIntercom(0x4,1,1); //(0x4,1,0);  drive mode
+	// 0x00 -> Single shoot
+	// 0x01 -> Continue
+	// 0x02 -> Timer
+//SendToIntercom(0x5,1,1); //(0x5,1,0);  WB chose
+	// 0x00 -> AWB
+	// 0x01 -> Daylight
+	// 0x02 -> Cloudy
+	// 0x03 -> Tungsten
+	// 0x04 -> Fluore. Light
+	// 0x05 -> Flash
+	// 0x06 -> Custom
+	// 0x07 -> Shade
+	// 0x08 -> Colour Temperature
+//SendToIntercom(0x6,1,1); //(0x6,1,0);  MF manual focus
+//SendToIntercom(0x7,1,1); // AF point selecttion: can extend some special:
+//7, 27, 41,47, 49, 73, 81,87, 97, 101, 105,113, 120,121, 116, 127, 135,
+//                                      139,165,168,169, 175, 185,
+// SendToIntercom(0x8,2,0x98); //Tv value: Set Tv to 1/4000
+/* Tv value table:
+30"	10
+25"	13
+20"	15
+15"	18
+13"	1b
+10"	1d
+8"	20
+6"	23
+5"	25
+4"	28
+3.2"	2b
+2.5"	2d
+2"	30
+1.6"	33
+1.3"	35
+1"	38
+0.8"	3b
+0.6"	3d
+0.5"	40
+0.4"	43
+0.3"	45
+4	48
+5	4b
+6	4d
+8	50
+10	53
+13	55
+15	58
+20	5b
+25	5d
+30	60
+40	63
+50	65
+60	68
+80	6b
+100	6d
+125	70
+160	73
+200	75
+250	78
+320	7b
+400	7d
+500	80
+640	83
+800	85
+1000	88
+1250	8b
+1600	8d
+2000	90
+2500	93
+3200	95
+4000	98
+*/
+// SendToIntercom(0x9,2,1); //Av value:
+// SendToIntercom(0x10,2,0x00000708); //Colour Temperature:
+	//e.g. SendToIntercom(0x10,2,0x00000708) --> Set Colour Temp. to 2800K
+	//0x00000ed8  -->    3800K
+	//0x000016a8  -->    5800K
+	//0x00001e78  -->    7800K
+	//0x00002648  -->    9800K
+	//0x00002a30  -->    10800K
+	//0x00005140  -->    20800K
+//SendToIntercom(0xA,1,1); //AV comp ex selecttion: can extend some special
+//SendToIntercom(0xB,1,1); // ISO set
+//SendToIntercom(0xC,1,1); // Red eye
+//SendToIntercom(0xD,1,1); //AEB BRK
+//SendToIntercom(0xE,1,1); //WB BRK
+//SendToIntercom(0xF,1,1); // Beep
+//SendToIntercom(0x16,1,1); // LCDBrightness
+// SendToIntercom(0x1d, 4, 0x02020202 ); // change SET 1 to 2,2,2,2
+// SendToIntercom(0x1e, 4, 0x02020202 ); // change SET 2 to 2,2,2,2
+// SendToIntercom(0x1f, 4, 0x02020202 ); // change SET 3 to 2,2,2,2
+
+//SendToIntercom(0x22,1,1); // RAW only, L+RAW, L only
+//SendToIntercom(0x23,1,1); // S,M,L. Combine no.34 to M+RAW OK, S+RAW not ok
+//SendToIntercom(0x24,1,1); // JPG Fine or Medium quality.
+	//  0x22, 0x23, 0x24
+        //-------------------
+	//L Fine -> 1,0,0
+	//M Fine -> 1,1,0
+	//S Fine -> 1,2,0
+	//L Medium -> 1,0,1
+	//M Medium -> 1,0,2
+	//S Medium -> 1,0,3
+	//RAW Only -> 2,0,0
+	//L+RAW Fine -> 3,0,0
+	//M+RAW Fine -> 3,1,0 (Not Work)
+	//S+RAW Fine -> 3,2,0 (Not Work)
+	//L+RAW Medium -> 3,0,1 (Not Work)
+	//M+RAW Medium -> 3,1,1 (Not Work)
+	//S+RAW Medium -> 3,2,1 (Not Work)
+	
+//SendToIntercom(43,1,1); // wb+-
+//SendToIntercom(0x2a-0x2f,1,1); // Cf1-->6
+// SendToIntercom(0x30,1,1); // Cf7 - Flash  0:On 1:Off
+// SendToIntercom(0x31,1,1); // Cf8 - ISO Expansion  0:Off   1:On(Support ISO3200)
+// SendToIntercom(0x32,1,1); // Cf9 - Bracket.sequence/Auto cancel.  0:0,-,+ (enabled)   1:0,-,+ (disabled) 2:-,0,+ (enabled)    3:-,0,+ (disabled)
+// SendToIntercom(0x33,1,1); // Cf10 - SuperImposed Display(Red Spot in viewfinder)   0:On   1:Off
+// SendToIntercom(0x34,1,1); // Cf11 - Menu Position   0:Previous (top if powered down) menu 1:Previous menu 2:Top menu
+                    35            12 mirror lock up
+// SendToIntercom(0x39,1,1); // Cf16 - Safety Shift   0:Off   1:On
+// SendToIntercom(0x3b,1,1); // Cf18 - Add original decision data   0:Off   1:On
+//SendToIntercom(0x59,1,1); // Clear camera seting
+//SendToIntercom(0x61,1,1); // Start update firmware
+//SendToIntercom(0x6B,1,1); // Full CF viewfinder message
+//SendToIntercom(0x6C,1,1); // Change Battery dialog
+//SendToIntercom(0x6D,1,1); // Burst counter set
+
+//-------------------------0x1f60, 400D: 0x1cf0
+// read by eventproc_SetAeMode etc., no write code found
+// 0x1f60+0x00: AeMode
+// 0x1f60+0x02: MeteringMode
+// 0x1f60+0x06: DriveMode
+// 0x1f60+0x0a: AFMode
+// 0x1f60+0x0e: TvValue
+// 0x1f60+0x10: AvValue  
+// 0x1f60+0x12: AvCompValue 
+// 0x1f60+0x14: IsoValue
+
+//--------------------------
+// 400D: 0x6D58:   =1 Display on, =0 disp off

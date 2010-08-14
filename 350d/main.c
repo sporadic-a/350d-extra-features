@@ -1,268 +1,225 @@
+/*
+ * EOS 350D mod project
+ * Original work by maiohwmai and cyrustam
+ * Further mods by crazyklaus and MilanC
+ */
+
 #include "headers.h"
-
-//Button Value
-// 0x89:		power on
-// 0x92:		close battery door
-// 0xa0:		menu
-// 0xa1:		info.	(400D: jump?)
-// 0xa4:		play
-// ?0xa5:		trash(?)
-// 0xa6:		set
-// 0xb1:		up
-// 0xb2:		down
-// 0xb3:		right
-// 0xb4:		left
-// 0xb8:		direct print
-// ?0xb9:		disp. ? or focus frame
-// ?0xba:		drive mode
-// ?0xbb:		AV+-
-// 0x90-0x93:	Mode Dial Tv Av M aDep
-
-// Camera Mode
-// 350D: 0x142b8
-// 400D: 0x16b60
-//---------------0x142b8 store value (same as 0x25E20 for 400D) ---------------------
-//AeValue address 0x142b8+0x00
-	//0: P
-	//1: Tv
-	//2: Av
-	//3: M
-	//4: unknow1
-	//5: A-DEP
-	//8: Full Auto (Green rectangular) 
-//MesureValue address 0x142b8+0x04
-	//3 Spot 
-	//0 Evaluative
-//Drive mode address 0x142b8+0x0c
-	//0 Single shooting
-	//1 Continuous shooting
-//? +0x18	AF set
-//AvComp Value address 0x142b8+0x24
-//IsoValue address 0x142b8+0x28
-//? +0x38	0 beep off, 1 beep on
-//? +0x60
-//? +0x90
-//? +0xa8
-
-// 0xe7e0 MainPreserveData
-// +0x00:
-// +0x02:
-// +0x04:
-// +0x06:
-// +0x08:
-// +0x0c:	ReleaseCount
-// +0x10:
-// +0x11:
-
-//-----------------------==SetPropertie
-// SendToIntercom(int key, int oldVal?, int newVal)
-// key:
-// 0x01:	AE mode						oldVal,newVal
-// 0x02:	Metering mode				oldVal,newVal
-// 0x02:	AF mode						oldVal,newVal?
-// 0x04:	Drive mode					oldVal,newVal
-// 0x08:	Tv							oldVal,newVal
-// 0x09:	Av							oldVal,newVal
-// 0x0a:	AVComp value				oldVal,newVal
-// 0x0b:	Iso							oldVal,newVal
-// 0x1c:	SelectProcParam				1,newVal
-// 0x1d:	SetProcParam: Contrast		4,newVal
-// 0x1e:	SetProcParam: Sharpness		4,newVal
-// 0x1f:	SetProcParam: ColorGain		4,newVal
-// 0x20:	SetProcParam: Hue			4,newVal
-// 0x21:	Color space					1,newVal
-// 0x2a-3b	CFn1-18						1,newVal
-// 0x3d:	see eventproc_SendCommand	*
-// 0x50:
-// 0x51:
-// 0x52:	Shutdown					0,0
-// 0x53:	Release						0,0
-// 0x54:
-// 0x55:
-// 0x59:
-// 0x5a:
-// 0x5f:
-// 0x60:
-// 0x61:
-// 0x62:
-// 0x69:
-// 0x6b:
-// 0x6d:	Release						1,1
-// 0x73:
-
-//SendToIntercom(0x1,1,1); //(0x0,1,2);  Zonedial mode P TV AV....
-//SendToIntercom(0x2,1,1); //(0x2,1,0);  Meter mode Eval, Center... 
-//SendToIntercom(0x3,1,1); //(0x3,1,0);  Flash ex comp 
-//SendToIntercom(0x4,1,1); //(0x4,1,0);  drive mode 
-//SendToIntercom(0x5,1,1); //(0x5,1,0);  WB chose 
-//SendToIntercom(0x6,1,1); //(0x6,1,0);  MF manual focus
-//SendToIntercom(0x7,1,1); // AF point selecttion: can extend some special: 7, 27, 41,47, 49, 73, 81,87, 97, 101, 105,113, 120,121, 116, 127, 135,
-//					139,165,168,169, 175, 185,   
-//SendToIntercom(0x8,2,1); //Tv value:
-//SendToIntercom(0xA,1,1); //AV comp ex selecttion: can extend some special  
-//SendToIntercom(0xB,1,1); // ISO set 
-//SendToIntercom(0xC,1,1); // Red eye 
-//SendToIntercom(0xD,1,1); //AEB BRK  
-//SendToIntercom(0xE,1,1); //WB BRK 
-//SendToIntercom(0xF,1,1); // Beep
-//SendToIntercom(22,1,1); // LCDBrightness 
-//SendToIntercom(34,1,1); // RAW only, L+RAW, L only
-//SendToIntercom(35,1,1); // S,M,L. Combine no.34 to M+RAW OK, S+RAW not ok
-//SendToIntercom(36,1,1); // JPG Fine or Medium quality.
-//SendToIntercom(43,1,1); // wb+-
-//SendToIntercom(44~~>49,1,1); // Cf1-->6
-//SendToIntercom(54,1,1); // Cf7
-//SendToIntercom(56,1,1); // Cf8
-//SendToIntercom(0x3C,1,0); //(0x3C,1,1); CFn10 
-//SendToIntercom(0x3B,1,1); //(0x3B,1,0); CFn11 
-//SendToIntercom(0x39,1,1); //(0x39,1,0);  CFn9 
-//SendToIntercom(0x59,1,1); // Clear camera seting  
-//SendToIntercom(0x61,1,1); // Start update firmware   
-//SendToIntercom(0x6B,1,1); // Full CF viewfinder message
-//SendToIntercom(0x6C,1,1); // Change Battery dialog
-//SendToIntercom(0x6D,1,1); // Burst counter set 
-
-//-------------------------0x1f60, 400D: 0x1cf0
-// read by eventproc_SetAeMode etc., no write code found
-// 0x1f60+0x00: AeMode
-// 0x1f60+0x02: MeteringMode
-// 0x1f60+0x06: DriveMode
-// 0x1f60+0x0a: AFMode
-// 0x1f60+0x0e: TvValue
-// 0x1f60+0x10: AvValue  
-// 0x1f60+0x12: AvCompValue 
-// 0x1f60+0x14: IsoValue
-
-//--------------------------
-// 400D: 0x6D58:   =1 Display on, =0 disp off
+#include "user_settings.txt"
 
 typedef struct {
-	int AEMode;			// 0x00
-	int MeteringMode;	// 0x04
-	int unknown1[1];	// 0x08
-	int DriveMode;		// 0x0c
-	int unknown2[2];	// 0x10
-	int AFSet;			// 0x18
-	int unknown3[2];	// 0x1c
-	int AvComp;			// 0x24
-	int Iso;			// 0x28
-	int unknown4[3];	// 0x2c
-	int BeepOn;			// 0x38
+        int AEMode;			// 0x00
+        int MeteringMode;		// 0x04
+        int unknown1[1];		// 0x08
+        int DriveMode;			// 0x0c
+        int WB;				// 0x10
+        int AF;				// 0x14
+        int AFPoint;			// 0x18
+        int TvVal;			// 0x1c
+        int AvVal;			// 0x20
+        int AvComp;			// 0x24
+        int Iso;			// 0x28
+        int unknown4[1];		// 0x2c
+        int Aeb;			// 0x30
+        int unknown5[1];		// 0x34
+        int BeepOn;			// 0x38
+        int ColorTemp;			// 0x3c
+        int unknown6[12];		// 0x40,0x44,0x48,0x4c,0x50,0x54,0x58,0x5c,0x60,0x64,0x68,0x6c
+        int ParaSetOne;			// 0x70
+        int ParaSetTwo;			// 0x74
+        int ParaSetThree;		// 0x78
+        int ParaSetBW;			// 0x7c
+        int unknown7a[5];		// 0x80,0x84,0x88,0x8c,0x90,
+        int menupos;			// 0x94
+        int unknown7b[9];		// 0x98,0x9c,0xa0,0xa4,0xa8,0xac,0xb0,0xb4,0xb8 
+        int CfEmitFlash;		// 0xbc
+        int CfExtendIso;		// 0xc0 
+        int CfAebSeq;			// 0xc4
+        int CfSiIndicate;		// 0xc8
+        int CfMenuPos;			// 0xcc
+        int CfMirrorUpLock;		// 0xd0
+        int CfFpselMethod;		// 0xd4
+        int CfFlashMetering;		// 0xd8
+        int CfFlashSyncRear;		// 0xdc
+        int CfSafetyShift;		// 0xe0
+        int CfLensButton;		// 0xe4
+        int CfOriginalEval;		// 0xe8
 } type_CAMERA_MODE;
 
-static const int meteringModeSpot = 3;
-static const int meteringModeEvaluative = 0;
+int fn=0;
+int* hMyTaskMessQue;
 
-#define cameraMode				(*((type_CAMERA_MODE*)0x142b8))	// CameraMode struct
+char buff[7];
+char buff2[4];
 
-#define releaseCount			(*((int*)(0xe7e0 + 0x0c)))
+int TLapseInterval=10;
+int TLapseFrames=20;
+int RawMode=1;
+int JpgQual=0;
+int JpgSize=0;
 
-#define isInFactoryMode			(*((int*)0x15284))				// != 0 when in factory mode
+#define cameraMode				(*((type_CAMERA_MODE*)0x142b8))		// CameraMode struct
+#define releaseCount				(*((int*)(0xe7e0 + 0x0c)))
+#define isInFactoryMode				(*((int*)0x15284))			// != 0 when in factory mode
 #define isBeepInit				(*((int*)0x398c))
-#define isDigitalGainEnabled	(*((int*)0x3df8))
-#define handleMainMenuDlg		(*((int*)0x22ac))				// Main menu Dialog handle
-#define handleMainMenuDlg2		(*((int*)0x22bc))				// Main menu Dialog 2 handle
-#define handleSubMenuDlg		(*((int*)0x22b8))				// Sub menu Dialog handle
-#define handleInfoCreativeDlg	(*((int*)0x2304))				// Info creative Dialog handle
-
+#define isDigitalGainEnabled			(*((int*)0x3df8))
+#define handleMainMenuDlg			(*((int*)0x22ac))			// Main menu Dialog handle
+#define handleMainMenuDlg2			(*((int*)0x22bc))			// Main menu Dialog 2 handle
+#define handleSubMenuDlg			(*((int*)0x22b8))			// Sub menu Dialog handle
+#define handleInfoCreativeDlg			(*((int*)0x2304))			// Info creative Dialog handle
 #define MESSAGE_DP				0x01
 #define MESSAGE_ISO				0x02
-
+#define MESSAGE_SPOT				0x03
+#define MESSAGE_ZI				0x04
+#define MESSAGE_AEB				0x05
+#define MESSAGE_UD				0x06
+#define MESSAGE_LR				0x07
+#define MESSAGE_ZO				0x08
 #define	BUTTON_MENU				0xa0
 #define	BUTTON_INFO				0xa1
 #define	BUTTON_PLAY				0xa4
 #define	BUTTON_SET				0xa6
+#define	BUTTON_ZI				0xa7
+#define	BUTTON_ZO				0xa8
 #define	BUTTON_UP				0xb1
 #define	BUTTON_DOWN				0xb2
-#define	BUTTON_RIGHT			0xb3
+#define	BUTTON_RIGHT				0xb3
 #define	BUTTON_LEFT				0xb4
 #define	BUTTON_DP				0xb8
 
-int* hMyTaskMessQue;
+#define QUOTE_(x) #x		//macros I need to get the numbers in the menu right in english version
+#define QUOTE(x) QUOTE_(x)	//(I skipped the numbers in the german translation to have more space)
 
-//void MyGlobalStdSet () {
-//	int f1 = -1;
-//	for (; f1 == -1; ) {
-//		f1 = FIO_OpenFile("A:/STDOUT.TXT", (O_CREAT | O_WRONLY), 0644);
-//		if (f1 == -1)
-//			SleepTask(100);
-//	}
-//	FIO_SeekFile(f1, 0, SEEK_END);
-//	ioGlobalStdSet(STD_OUT, f1);
-//}
-
-void PrintReleaseCount () {
-	int fout = FIO_OpenFile("A:/shutter.txt", (O_CREAT | O_WRONLY), 0644);
-	if (fout != -1) {
-		char* buf[64];
-//		FIO_SeekFile(fout, 0, SEEK_END);
-		sprintf(buf, "ReleaseCount:\t%d\n\r", releaseCount);
-		FIO_WriteFile(fout, buf, strlen(buf));
-		FIO_CloseFile(fout);
+char* aebH2S(int aeb){
+	int aebone=0;
+	int aebtwo=0;
+	switch(aeb&0xf8){
+	   case 0x08:
+	      aebone=1;
+	      break;
+	   case 0x10:
+	      aebone=2;
+	      break;
+	   case 0x18:
+	      aebone=3;
+	      break;
+	   case 0x20:
+	      aebone=4;
+	      break;
+	   case 0x28:
+	      aebone=5;
+	      break;
+	   case 0x30:
+	      aebone=6;
 	}
+	switch(aeb&0x07){
+	   case 3:
+	      aebtwo=3;
+	      break;
+	   case 4:
+	      aebtwo=5;
+	      break;
+	   case 5:
+	      aebtwo=7;
+	}
+	sprintf(buff,"%d.%d",aebone,aebtwo);
+	return buff;
 }
 
-int lastButton = 0;
-unsigned long lastTick = 0;
+char* avcompH2S(int avcomp){
+	int avone=0;
+	int avtwo=0;
+	if (avcomp < 0x80) {
+		switch(avcomp&0xf8){
+			case 0x08:
+				avone=1;
+				break;
+			case 0x10:
+				avone=2;
+		  }
+		switch(avcomp&0x07){
+			case 3:
+				avtwo=3;
+				break;
+			case 4:
+				avtwo=5;
+				break;
+			case 5:
+				avtwo=7;
+		  }
+		sprintf(buff2,"%d.%d",avone,avtwo);
+	  }
+	else {
+		switch((0x100-avcomp)&0xf8) {
+			case 0x08:
+				avone=1;
+				break;
+			case 0x10:
+				avone=2;
+		  }
+		switch((0x100-avcomp)&0x07) {
+			case 3:
+				avtwo=3;
+				break;
+			case 4:
+				avtwo=5;
+				break;
+			case 5:
+				avtwo=7;
+		  }
+		sprintf(buff2,"-%d.%d",avone,avtwo);
+	  }
+	return buff2;
+}
 
+inline char* colortempH2S(int colortemp){
+  sprintf(buff, "%dK", colortemp);
+  return buff;
+}
+
+inline char* ShutterCountH2S(int tmpshut){
+  sprintf(buff, "%d", tmpshut);
+  return buff;
+}
+
+/* this function copies the strings a and b to the destination string c */
+inline void concat( char *a, char *b, char *c){
+        while( *a )  {
+                *c = *a; ++a, ++c;
+        }
+        while( *b )  {
+                *c = *b; ++b, ++c;
+        }
+        *c = '\0';
+}
+
+#ifdef POSITION_ISO
 void SwitchIso(int button) {
 	int isoVal = cameraMode.Iso;
-//	int cfn[] = {8, 1};
-//	eventproc_SetCustomFunc(cfn);
-	int tick = tickGet();
-	if ((lastTick != 0) && ((tick - lastTick) < 20UL) && (lastButton == button))
-		return;
-	LEDBLUE = LEDON;
-	lastButton = button;
-	if (tick == 0)
-		lastTick = 1;
-	else
-		lastTick = tick;
+	LEDSON
 	if (isoVal == 0x6f)
 		isoVal = 0x70;
 	switch (button) {
-		case BUTTON_LEFT:
-		{
-			switch (isoVal & 0x0f) {
-				case 0x00:
-				case 0x03:
-				case 0x08:
-				case 0x0b:
-					isoVal -= 0x03;
-					break;
-				case 0x05:
-				case 0x0d:
-					isoVal -= 0x02;
-					break;
-			}
-			break;
-		}
 		case BUTTON_RIGHT:
-		{
-			switch (isoVal & 0x0f) {
-				case 0x00:
-				case 0x05:
-				case 0x08:
-				case 0x0d:
-					isoVal += 0x03;
+			switch (isoVal & 0xf) {
+				case 3:
+				case 0xb:
+					isoVal+=2;
 					break;
-				case 0x03:
-				case 0x0b:
-					isoVal += 0x02;
-					break;
+				default:
+					isoVal+=3;
 			}
 			break;
-		}
-		case BUTTON_UP:
-		{
-			isoVal += 0x08;
+		case BUTTON_LEFT:
+			switch (isoVal & 0xf) {
+				case 5:
+				case 0xd:
+					isoVal-=2;
+					break;
+				default: 
+					isoVal-=3;
+			}
 			break;
-		}
-		case BUTTON_DOWN:
-		{
-			isoVal -= 0x08;
-			break;
-		}
 	}
 	if (isoVal > 0x70)
 		isoVal = 0x48;
@@ -272,16 +229,173 @@ void SwitchIso(int button) {
 		isoVal = 0x6f;
 	SendToIntercom(0x2a + 8 - 1, 1, 1);				// enable CFn.8 for ISO H
 	eventproc_RiseEvent("SetIsoValue", isoVal);		// eventproc_SetIsoValue(&isoVal);
-//	my_ShowInfoCreativeDlg();
-//	if (cameraMode.BeepOn != 0)
-//		Beep(0);
-	LEDBLUE = LEDOFF;
+	LEDSOFF
+}
+#endif
+
+#ifdef POSITION_AEB
+void SwitchAeb(int button) {
+	int aebVal = cameraMode.Aeb;
+	LEDSON
+	switch (button) {
+		case BUTTON_LEFT:
+			if (aebVal != 0)
+				switch (aebVal & 0xf) {
+					case 0x00:
+					case 0x03:
+					case 0x08:
+					case 0x0b:
+						aebVal-=3;
+						break;
+					default:
+						aebVal--;
+				  }
+				break;
+		case BUTTON_RIGHT:
+			if (aebVal != 0x35)
+				switch (aebVal & 0xf) {
+					case 0x00:
+					case 0x05:
+					case 0x08:
+					case 0x0d:
+						aebVal+=3;
+						break;
+					default:
+						aebVal++;
+                        }
+          }
+        SendToIntercom(0xd,1,aebVal);
+	LEDSOFF
+}
+#endif
+
+#ifdef POSITION_CT
+void SwitchColorTemp(int button) {
+	int ColorTempVal = cameraMode.ColorTemp;
+	LEDSON
+	switch (button) {
+		case BUTTON_LEFT:
+			ColorTempVal-=0x64;	
+			break;
+		case BUTTON_RIGHT:
+			ColorTempVal+=0x64;
+          }
+        if(ColorTempVal>0x2af8)
+		ColorTempVal=0x2af8;
+        if(ColorTempVal<0x708)
+		ColorTempVal=0x708;
+        SendToIntercom(0x10, 2, ColorTempVal);
+        LEDSOFF
+}
+#endif
+
+#ifdef POSITION_METERING
+void SwitchMetering(int button) {
+	int TmpVal = cameraMode.MeteringMode;
+	LEDSON
+	switch (button) {
+		case BUTTON_LEFT:
+			if(TmpVal)			//when not 0 decrease
+				TmpVal--;	
+			break;
+		case BUTTON_RIGHT:
+			if(TmpVal<3)			//if smaller than 3, increase
+				TmpVal++;
+          }
+        SendToIntercom(0x02, 1, TmpVal);
+        LEDSOFF
+}
+#endif
+
+#ifdef POSITION_WB
+void SwitchWB(int button) {
+	int TmpVal = cameraMode.WB;
+	LEDSON
+	switch (button) {
+		case BUTTON_LEFT:
+			if(TmpVal)
+				TmpVal--;	
+			break;
+		case BUTTON_RIGHT:
+			if(TmpVal<0x08)
+				TmpVal++;
+	  }
+	SendToIntercom(0x05, 1, TmpVal);
+	LEDSOFF
+}
+#endif
+
+#ifdef POSITION_TLAPSE
+void SwitchTimeLapse(int button) {
+	int i=0;
+	switch (button) {
+		case BUTTON_SET:
+			while (i < TLapseFrames) {
+				i++;
+				SendToIntercom(0x53,0,0);
+				SleepTask(TLapseInterval*1000);
+			  }
+			break;
+		case BUTTON_LEFT:
+			if (TLapseInterval>1) TLapseInterval--;
+			break;
+		case BUTTON_RIGHT:
+			TLapseInterval += 1;
+			break;
+		case BUTTON_MENU:
+			TLapseFrames *= 2;
+			break;
+		case BUTTON_INFO:
+			if (TLapseFrames>1)
+				TLapseFrames /= 2;
+			break;
+		case BUTTON_PLAY: TLapseFrames++;
+	  }
+}
+#endif
+
+#ifdef POSITION_RAWMODE
+void SwitchRawMode(int button)
+  {
+	switch (button) {
+		case BUTTON_LEFT:
+			RawMode = (RawMode%3)+1;
+			break;
+		case BUTTON_SET:
+			JpgQual = (JpgQual+1)&0x1;
+			break;
+		case BUTTON_RIGHT:
+			JpgSize = (JpgSize+1)%3;
+	  }
+	SendToIntercom(0x22,1,RawMode);
+	SendToIntercom(0x24,1,JpgQual);
+	SendToIntercom(0x23,1,JpgSize);
+  }
+#endif
+
+int CfnVal(int button, int curr, int max, int min) {
+        switch (button) {
+                case BUTTON_LEFT:
+                        if(curr!=min)
+					curr--;
+			break;
+                case BUTTON_RIGHT:
+                        if(curr!=max)
+					curr++;
+        }
+	return curr;
+}
+
+int ToggleCfnVal(int button, int curr) {				//allows ON/OFF only options to be toggled with BOTH left and right button
+	if ((button==BUTTON_LEFT)||(button==BUTTON_RIGHT))
+		curr^=1;
+	return curr;
 }
 
 const char* my_GetISOString(int isoVal) {
 	switch (isoVal) {
 		case 0x00: return "Auto";
-		case 0x28: return "6";
+/*		case 0x28: return "6";
 		case 0x2b: return "8";
 		case 0x2d: return "10";
 		case 0x30: return "12";
@@ -292,7 +406,7 @@ const char* my_GetISOString(int isoVal) {
 		case 0x3d: return "40";
 		case 0x40: return "50";
 		case 0x43: return "64";
-		case 0x45: return "80";
+		case 0x45: return "80";*/
 		case 0x48: return "100";
 		case 0x4b: return "125";
 		case 0x4d: return "160";
@@ -313,35 +427,609 @@ const char* my_GetISOString(int isoVal) {
 	return "";
 }
 
+char *aebstr;
+const char* my_GetAEBString(int aebVal) {
+	int AvCompVal = cameraMode.AvComp;
+	int AebVal = cameraMode.Aeb;
+	char *aebstr1=avcompH2S(AvCompVal);
+	char *aebstr2=" +- ";
+	char *aebstr3=aebH2S(AebVal);
+	char *tmpaebstr;
+	concat(aebstr1, aebstr2, tmpaebstr);
+	concat(tmpaebstr, aebstr3, aebstr); 
+	return aebstr;
+}
+
+// !!IMPORTANT!!
+// NEXT 3 FUNCTIONS: GERMAN VERSION, LOOK DOWN FOR ENGLISH VERSION
+
+#ifdef DEUTSCH
+char *colortempstr;
+const char* my_GetColorTempString() {
+	concat("FarbTemp:", colortempH2S(cameraMode.ColorTemp), colortempstr);
+	return colortempstr;
+}
+
+char *dynamicstr;
+const char* my_GetDynamicString() { 
+	switch (fn) {
+#ifdef POSITION_ISO
+		case POSITION_ISO-1:
+#endif
+#ifdef POSITION_CT
+		case POSITION_CT-1:
+#endif
+#ifdef POSITION_AEB
+		case POSITION_AEB-1: return "einstellen r/l";
+#endif
+#ifdef POSITION_WB
+		case POSITION_WB-1:
+			switch (cameraMode.WB){
+				case 0: return "AutoWeissabgl.";
+				case 1: return "Tageslicht";
+				case 2: return "Wolkig";
+				case 3: return "Gluehlampe";
+				case 4: return "Leuchtstoff";
+				case 5: return "Blitz";
+				case 6: return "Manuell";
+				case 7: return "Schatten";
+				default: return "Farbtemperatur";
+			}
+#endif
+#ifdef POSITION_METERING
+		case POSITION_METERING-1:
+			switch(cameraMode.MeteringMode){
+				case 0: return "Mehrfeldmessung";
+				case 1: return "Integralmessung";
+				case 2: return "Selektivmessung";
+				case 3: return "Spotmessung";
+			}
+#endif
+#ifdef POSITION_BSEQ
+		case POSITION_BSEQ-1:
+			switch(cameraMode.CfAebSeq){
+				case 0: return "Sequenz 0-+,Aus";
+				case 1: return "Sequenz 0-+,Ein";
+				case 2: return "Sequenz -0+,Aus";
+				case 3: return "Sequenz -0+,Ein";
+			}
+#endif
+#ifdef POSITION_SI
+		case POSITION_SI-1:
+			if (cameraMode.CfSiIndicate) 
+				return "Aus";
+			else
+				return "Ein";
+#endif
+#ifdef POSITION_MENU
+		case POSITION_MENU-1:
+			switch(cameraMode.CfMenuPos){
+				case 0: return "Standard";
+				case 1: return "immer merken";
+				default: return "immer Menue 1";
+			}
+#endif
+#ifdef POSITION_SAFESHIFT
+		case POSITION_SAFESHIFT-1:
+			if (cameraMode.CfSafetyShift) 
+				return "Ein";
+			else
+				return "Aus";
+#endif
+#ifdef POSITION_AFBUTTON
+		case POSITION_AFBUTTON-1:
+			switch(cameraMode.CfLensButton){
+				case 0: return "AF Stop";
+				case 1: return "AF Start";
+				case 2: return "AELock";
+				case 3: return "AF Point";
+				case 4: return "OneShot/AISer.";
+				default: return "IS Start";
+			}
+#endif
+#ifdef POSITION_DATA
+		case POSITION_DATA-1:
+			if (cameraMode.CfOriginalEval) 
+				return "Ein";
+			else
+				return "Aus";
+#endif
+#ifdef POSITION_FLASH
+		case POSITION_FLASH-1:
+			if (cameraMode.CfEmitFlash) 
+				return "Aus";
+			else
+				return "Ein";
+#endif
+#ifdef POSITION_COUNTER
+		case POSITION_COUNTER-1:
+			concat(ShutterCountH2S(releaseCount), " Ausloesg", dynamicstr);
+			return dynamicstr;
+#endif
+#ifdef POSITION_TLAPSE
+		case POSITION_TLAPSE-1:
+			sprintf(dynamicstr, "%d x %ds", TLapseFrames, TLapseInterval);
+			return dynamicstr;
+#endif
+#ifdef POSITION_RAWMODE
+		case POSITION_RAWMODE-1:
+			switch(RawMode) {
+				case 1: return "nur JPG";
+				case 2: return "nur RAW";
+				default: return "RAW+JPEG";
+			  }
+#endif
+		default:
+			return "";
+	}
+}
+
+const char* my_GetCurSetString() {
+	switch (fn) {
+#ifdef POSITION_ISO
+		case POSITION_ISO-1: return "ISO-Wert";
+#endif
+#ifdef POSITION_WB
+		case POSITION_WB-1: return "Weissabgleich";
+#endif
+#ifdef POSITION_CT
+		case POSITION_CT-1: return "Farbtemperatur";
+#endif
+#ifdef POSITION_METERING
+		case POSITION_METERING-1: return "BeliMessmethode";
+#endif
+#ifdef POSITION_AEB
+		case POSITION_AEB-1: return "AEB";
+#endif
+#ifdef POSITION_BSEQ
+		case POSITION_BSEQ-1: return "AEBSeq/Merken";
+#endif
+#ifdef POSITION_SI
+		case POSITION_SI-1: return "AF-Punkte(rot)";
+#endif
+#ifdef POSITION_MENU
+		case POSITION_MENU-1: return "Menue-Position";
+#endif
+#ifdef POSITION_SAFESHIFT
+		case POSITION_SAFESHIFT-1: return "AutoKorr Av/Tv";
+#endif
+#ifdef POSITION_AFBUTTON
+		case POSITION_AFBUTTON-1: return "?AFKnopf";
+#endif
+#ifdef POSITION_DATA
+		case POSITION_DATA-1: return "ZusatzdatenRAW";
+#endif
+#ifdef POSITION_FLASH
+		case POSITION_FLASH-1: return "Blitz Ein/Aus";
+#endif
+#ifdef POSITION_COUNTER
+		case POSITION_COUNTER-1: return "intern.Zaehler";
+#endif
+// TODO: translate
+#ifdef POSITION_TLAPSE
+		case POSITION_TLAPSE-1: return "Zeitraffer";
+#endif
+#ifdef POSITION_RAWMODE
+		case POSITION_RAWMODE-1: return "Bildqualitaet";
+#endif
+		default: return "Fehler";
+	}
+}
+
+#else
+
+// NOW THE ENGLISH PART (next 3 functions), LOOK ABOVE FOR GERMAN VERSION
+
+char *colortempstr;
+const char* my_GetColorTempString() {
+	concat("CTemp:", colortempH2S(cameraMode.ColorTemp), colortempstr);
+	return colortempstr;
+}
+
+char *dynamicstr;
+const char* my_GetDynamicString() { 
+	switch (fn) {
+#ifdef POSITION_WB
+		case POSITION_WB-1:
+			switch (cameraMode.WB){
+				case 0: return "AWB";
+				case 1: return "Daylight";
+				case 2: return "Cloudy";
+				case 3: return "Tungsten";
+				case 4: return "Fluorescent";
+				case 5: return "Flash";
+				case 6: return "Custom";
+				case 7: return "Shade";
+				default: return "ColorTemp";
+			}
+#endif
+#ifdef POSITION_METERING
+		case POSITION_METERING-1:
+			switch(cameraMode.MeteringMode){
+				case 0: return "Evaluative";
+				case 1: return "Center W.";
+				case 2: return "Partial";
+				case 3: return "Spot";
+			}
+#endif
+#ifdef POSITION_BSEQ
+		case POSITION_BSEQ-1:
+			switch(cameraMode.CfAebSeq){
+				case 0: return "0-+,On";
+				case 1: return "0-+,Off";
+				case 2: return "-0+,On";
+				case 3: return "-0+,Off";
+			}
+#endif
+#ifdef POSITION_SI
+		case POSITION_SI-1:
+			if (cameraMode.CfSiIndicate) 
+				return "Off";
+			else
+				return "On";
+#endif
+#ifdef POSITION_MENU
+		case POSITION_MENU-1:
+			switch(cameraMode.CfMenuPos){
+				case 0: return "Prev/Top(PwdDw)";
+				case 1: return "Previous";
+				default: return "Top Menu";
+			}
+#endif
+#ifdef POSITION_SAFESHIFT
+		case POSITION_SAFESHIFT-1:
+			if (cameraMode.CfSafetyShift) 
+				return "On";
+			else
+				return "Off";
+#endif
+#ifdef POSITION_AFBUTTON
+		case POSITION_AFBUTTON-1:
+			switch(cameraMode.CfLensButton){
+				case 0: return "AF Stop";
+				case 1: return "AF Start";
+				case 2: return "AELock";
+				case 3: return "AF Point";
+				case 4: return "OneShot/AISer.";
+				default: return "IS Start";
+			}
+#endif
+#ifdef POSITION_DATA
+		case POSITION_DATA-1:
+			if (cameraMode.CfOriginalEval) 
+				return "On";
+			else
+				return "Off";
+#endif
+#ifdef POSITION_FLASH
+		case POSITION_FLASH-1:
+			if (cameraMode.CfEmitFlash) 
+				return "Off";
+			else
+				return "On";
+#endif
+#ifdef POSITION_COUNTER
+		case POSITION_COUNTER-1:
+			return ShutterCountH2S(releaseCount);
+#endif
+#ifdef POSITION_TLAPSE
+		case POSITION_TLAPSE-1:
+			sprintf(dynamicstr, "%d x %ds", TLapseFrames, TLapseInterval);
+			return dynamicstr;
+#endif
+#ifdef POSITION_RAWMODE
+		case POSITION_RAWMODE-1:
+			switch(RawMode) {
+				case 1: return "JPEG only";
+				case 2: return "Raw only";
+				default: return "Raw+JPEG";
+			  }
+#endif
+		default:
+			return "";
+	}
+}
+
+const char* my_GetCurSetString() {
+	switch (fn) {
+#ifdef POSITION_ISO
+		case POSITION_ISO-1: return QUOTE(POSITION_ISO)":ISO";
+#endif
+#ifdef POSITION_WB
+		case POSITION_WB-1: return QUOTE(POSITION_WB)":WB";
+#endif
+#ifdef POSITION_CT
+		case POSITION_CT-1: return QUOTE(POSITION_CT)":CTemp";
+#endif
+#ifdef POSITION_METERING
+		case POSITION_METERING-1: return QUOTE(POSITION_METERING)":Metering";
+#endif
+#ifdef POSITION_AEB
+		case POSITION_AEB-1: return QUOTE(POSITION_AEB)":AEB";
+#endif
+#ifdef POSITION_BSEQ
+		case POSITION_BSEQ-1: return QUOTE(POSITION_BSEQ)":CF-BSeq/AutoC";
+#endif
+#ifdef POSITION_SI
+		case POSITION_SI-1: return QUOTE(POSITION_SI)":CF-SI Disp.";
+#endif
+#ifdef POSITION_MENU
+		case POSITION_MENU-1: return QUOTE(POSITION_MENU)":CF-Menu Posi.";
+#endif
+#ifdef POSITION_SAFESHIFT
+		case POSITION_SAFESHIFT-1: return QUOTE(POSITION_SAFESHIFT)":CF-Safe.Shift";
+#endif
+#ifdef POSITION_AFBUTTON
+		case POSITION_AFBUTTON-1: return QUOTE(POSITION_AFBUTTON)":?CF-L.AFButt";
+#endif
+#ifdef POSITION_DATA
+		case POSITION_DATA-1: return QUOTE(POSITION_DATA)":CF-Decis.Da";
+#endif
+#ifdef POSITION_FLASH
+		case POSITION_FLASH-1: return QUOTE(POSITION_FLASH)":CF-Flash";
+#endif
+#ifdef POSITION_COUNTER
+		case POSITION_COUNTER-1: return QUOTE(POSITION_COUNTER)":Shutt.Count";
+#endif
+#ifdef POSITION_TLAPSE
+		case POSITION_TLAPSE-1: return QUOTE(POSITION_TLAPSE)":TimeLapse";
+#endif
+#ifdef POSITION_RAWMODE
+		case POSITION_RAWMODE-1: return QUOTE(POSITION_RAWMODE)":Raw+JPEG";
+#endif
+		default: return "?";
+	}
+}
+#endif
+
 void MyTask() {
-//	MyGlobalStdSet();
-	for (;;) {
+	int mesmode=3;
+	int isRelease=0;
+	while (1) {
 		int* pMessage = 0;
-		ReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0);
-//		TryReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0);
-//		TryReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0);
-		if (pMessage == 0)
+		ReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0); //	TryReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0);
+		if (!pMessage)
 			continue;
 		switch (pMessage[0]) {
-			case MESSAGE_DP:
-				if (handleMainMenuDlg != 0) {						// Main menu Dialog opened
-					// int colorVal = 10000;
-					LEDBLUE = LEDON;
-					// EnterFactoryMode();							// nothing happened	// eventproc_RiseEvent("EnterFactoryMode");
-					// eventproc_RiseEvent("ShowColorBar", 0);
-					// eventproc_RiseEvent("DispIsoMode", 0);
-					// eventproc_RiseEvent("PrintICUInfo", 0);		// print ReleaseCount
-					// eventproc_SetColor(&colorVal);
-					PrintReleaseCount();
-					// ShowImageInfoDlg();
-					// my_ShowInfoCreativeDlg();
-					if (cameraMode.BeepOn != 0)
-						Beep(0);
-					LEDBLUE = LEDOFF;
+		
+#ifdef SHORTCUTS
+/*
+cameraMode.menupos seems to count the menus beginning with 0x?1 at the top of every page
+and 0x0? for the first page
+
+0x01 means first page, first submenu (Quality)
+0x13 means second page, third submenu
+0x33 means fourth page, third submenu
+
+etc
+*/
+			case MESSAGE_ZO:									// zoom-out button pressed in ...
+				if (handleMainMenuDlg){
+					if (isRelease)
+						isRelease=0;
+					else{
+						switch (cameraMode.menupos){
+							case 1:								// ...quality menu
+								SendToIntercom(0x30,1,cameraMode.CfEmitFlash^1);	//toggle flash on/off
+								if(cameraMode.CfEmitFlash)				//flash red led for enabled, blue for disabled flash
+									LEDRED=LEDON;
+								else
+									LEDBLUE=LEDON;
+								SleepTask(150);
+								LEDRED=LEDOFF,LEDBLUE=LEDOFF;
+								break;
+							case 4: 							// ...AF menu
+								SendToIntercom(0x16, 1, 1);			// set LCD brightness to min
+								break;
+							case 6:								// ...ISO menu
+								eventproc_RiseEvent("SetIsoValue", 0x48);	// set ISO 100
+								eventproc_RiseEvent("PressMenuButton", 0);	// close menu and
+								eventproc_RiseEvent("PressSetButton", 0);	// open menu again to show new setting
+								SHORTCUTSIGNAL
+								break;
+							case 0x13:							// ...WB menu
+								SendToIntercom(5, 1, 0);			// set AWB
+								eventproc_RiseEvent("PressMenuButton", 0);	// close menu and
+								eventproc_RiseEvent("PressSetButton", 0);	// open menu again to show new setting
+								SHORTCUTSIGNAL
+						}
+			                	isRelease=1;
+					}
 				}
 				break;
-			case MESSAGE_ISO:
-				SwitchIso(pMessage[1]);
+			case MESSAGE_ZI:									// zoom-in button pressed in ...
+		                if (handleMainMenuDlg) {
+					if(isRelease)
+						isRelease=0;
+					else{
+						switch (cameraMode.menupos){
+							case 1:								// ...quality menu
+								eventproc_RiseEvent("PressMenuButton", 0);	//go to parameter menu
+								eventproc_RiseEvent("PressJumpButton", 0);
+								eventproc_RiseEvent("PressUpButton", 0);
+								eventproc_RiseEvent("PressSetButton", 0);
+								break;
+							case 4:								// ...AF menu
+								SendToIntercom(0x16, 1, 5);			// set LCD brightness to max
+								break;
+							case 5:								// ...metering menu
+								eventproc_SetMesMode(&mesmode);			// Spot metering mode
+								SHORTCUTSIGNAL
+								break;
+							case 6:								// ...ISO menu
+								SendToIntercom(0x2a + 8 - 1, 1, 1);		// enable CFn.8 for ISO H
+								eventproc_RiseEvent("SetIsoValue", 0x6f);	// set ISO 3200
+								SHORTCUTSIGNAL
+								break;
+							case 0x13:							// ...WB menu
+								SendToIntercom(5, 1, 8);		 	//set WB ColorTemp
+								SHORTCUTSIGNAL
+						}
+					isRelease=1;
+					}
+				}
+				break;
+			case MESSAGE_DP:									//direct print button pressed in ...
+				if (handleMainMenuDlg) {
+					switch (cameraMode.menupos){
+						case 1:									// ...quality menu
+							SendToIntercom(0x39,1,cameraMode.CfSafetyShift^1);	//toggle safety shift
+							if(cameraMode.CfSafetyShift)				//flash red led for enabled, blue for disabled SS
+								LEDBLUE=LEDON;
+							else
+								LEDRED=LEDON;
+							SleepTask(150);
+							LEDRED=LEDOFF,LEDBLUE=LEDOFF;
+							break;
+						case 4:									// ...AF menu
+							SendToIntercom(0x16,1,3);				//set LCD brightness to 3
+							break;
+						case 5:									// ...metering menu
+							SendToIntercom(0x35,1,cameraMode.CfMirrorUpLock^1);	//toggle mirror lock-up
+							if(cameraMode.CfMirrorUpLock)				//flash red led for enabled, blue for disabled MLU
+								LEDBLUE=LEDON;
+							else
+								LEDRED=LEDON;
+							SleepTask(150);
+							LEDRED=LEDOFF,LEDBLUE=LEDOFF;
+							break;
+						case 6:									// ...ISO menu
+							eventproc_RiseEvent("SetIsoValue", 0x58);		//set ISO 400
+							eventproc_RiseEvent("PressMenuButton", 0);		//close menu and
+							eventproc_RiseEvent("PressSetButton", 0);		//open menu again to show new setting
+							SHORTCUTSIGNAL
+							break;
+						case 0x13:								// ...WB menu
+							SendToIntercom(5,1,6);					// Set WB to manual using last taken picture as reference
+							eventproc_RiseEvent("PressMenuButton",0);	// go from wb submenu to menu page 2
+							eventproc_RiseEvent("PressDownButton",0);
+							eventproc_RiseEvent("PressDownButton",0);	//go down to manual wb image selection
+							eventproc_RiseEvent("PressSetButton",0);
+							eventproc_RiseEvent("PressSetButton",0);	//select last image on card
+							eventproc_RiseEvent("PressUpButton",0);
+							eventproc_RiseEvent("PressUpButton",0);
+							eventproc_RiseEvent("PressSetButton",0);	//go back to WB menu
+							SHORTCUTSIGNAL
+					}
+				}
+				break;
+#endif
+
+			case MESSAGE_UD:
+				if (isRelease)
+					isRelease=0;
+				else{
+					switch(pMessage[1]){
+						case BUTTON_DOWN:
+							if(fn)
+								fn--;
+							else
+								fn=POSITION_LAST-1;
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+						case BUTTON_UP:
+							if(fn<POSITION_LAST-1)
+								fn++;
+							else
+								fn=0;
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+					}
+					isRelease=1;
+				}
+				break;
+			case MESSAGE_LR:
+				if (isRelease)
+						isRelease=0;
+				else{
+					switch(fn){
+#ifdef POSITION_ISO
+						case POSITION_ISO-1:
+							SwitchIso(pMessage[1]);
+							break;
+#endif
+#ifdef POSITION_WB
+						case POSITION_WB-1:
+							SwitchWB(pMessage[1]);
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_CT
+						case POSITION_CT-1:
+							SwitchColorTemp(pMessage[1]);
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_METERING
+						case POSITION_METERING-1:
+							SwitchMetering(pMessage[1]);
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_AEB
+						case POSITION_AEB-1:
+							SwitchAeb(pMessage[1]);
+							break;
+#endif
+#ifdef POSITION_BSEQ
+						case POSITION_BSEQ-1: // BSeq/AutoC
+							SendToIntercom(0x32, 1, CfnVal(pMessage[1],cameraMode.CfAebSeq,3,0));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_SI
+						case POSITION_SI-1: //Si display
+							SendToIntercom(0x33, 1, ToggleCfnVal(pMessage[1],cameraMode.CfSiIndicate));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_MENU
+						case POSITION_MENU-1: //menu Position
+							SendToIntercom(0x34, 1, CfnVal(pMessage[1],cameraMode.CfMenuPos,2,0));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_SAFESHIFT
+						case POSITION_SAFESHIFT-1: //Safety Shift
+							SendToIntercom(0x39, 1, ToggleCfnVal(pMessage[1],cameraMode.CfSafetyShift));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_AFBUTTON
+						case POSITION_AFBUTTON-1: //Lens AF Button
+							SendToIntercom(0x3a, 1, CfnVal(pMessage[1],cameraMode.CfLensButton,5,0));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_DATA
+						case POSITION_DATA-1: //  Decision Data
+							SendToIntercom(0x3b, 1, ToggleCfnVal(pMessage[1],cameraMode.CfOriginalEval));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_FLASH
+						case POSITION_FLASH-1: //  Flash
+							SendToIntercom(0x30, 1, ToggleCfnVal(pMessage[1],cameraMode.CfEmitFlash));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_TLAPSE
+						case POSITION_TLAPSE-1: // Time-lapse
+							SwitchTimeLapse(pMessage[1]);
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_RAWMODE
+						case POSITION_RAWMODE-1: // Raw toggle
+							SwitchRawMode(pMessage[1]);
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+						default:
+							break;
+					}
+					isRelease=1;
+				}
 				break;
 		}
 		MainHeapFree(pMessage);
@@ -362,17 +1050,34 @@ void SendMyMessage(int param0, int param1) {
 
 void my_IntercomHandler(int r0, char* ptr) {
     switch (ptr[1]) {
+		case BUTTON_UP:
+		case BUTTON_DOWN:
+			if (handleInfoCreativeDlg) {
+				SendMyMessage(MESSAGE_UD, ptr[1]);
+				return;
+			}
+			break;
+		case BUTTON_LEFT:
+		case BUTTON_RIGHT:
+		case BUTTON_SET:
+#ifdef POSITION_TLAPSE
+		case BUTTON_MENU:
+		case BUTTON_INFO:
+		case BUTTON_PLAY:
+#endif
+			if (handleInfoCreativeDlg) {
+				SendMyMessage(MESSAGE_LR, ptr[1]);
+				return;
+			}
+			break;
+		case BUTTON_ZO:
+			SendMyMessage(MESSAGE_ZO, ptr[1]);
+			break;
 		case BUTTON_DP:
 			SendMyMessage(MESSAGE_DP, ptr[1]);
 			break;
-		case BUTTON_UP:
-		case BUTTON_DOWN:
-		case BUTTON_LEFT:
-		case BUTTON_RIGHT:
-			if (handleInfoCreativeDlg != 0) {
-				SendMyMessage(MESSAGE_ISO, ptr[1]);
-				return;
-			}
+		case BUTTON_ZI:
+			SendMyMessage(MESSAGE_ZI, ptr[1]);
 			break;
 	}
 
