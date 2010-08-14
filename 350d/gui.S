@@ -635,6 +635,7 @@ loc_FF84E370:
 		MOV	R2, R0
 		MOV	R0, R4
 		BL	sub_FF8417D0
+
 		ADD	R6, SP,	#0x190+0x174
 		MOV	R0, SP
 		MOV	R1, R6
@@ -646,7 +647,8 @@ loc_FF84E370:
 		MOV	R1, #0x16
 		MOV	R2, R0
 		MOV	R0, R4
-		BL	sub_FF8417D0
+		BL	sub_FF8417D0  // related to WB String
+
 		MOV	R1, R10
 		MOV	R0, SP
 		MOV	R2, #0x164
@@ -654,26 +656,28 @@ loc_FF84E370:
 		BL	memcpy
 		LDMIA	R8, {R1-R3}
 		MOV	R0, #0x18
-		BL	sub_FF842D2C
+		BL	sub_FF842D2C //related to Date Time String
 		MOV	R0, R0,LSL#16
 		MOV	R1, #0
 		MOV	R0, R0,LSR#16
-		BL	sub_FF847510
+		BL	sub_FF847510	//related to Date Time String
 		MOV	R1, #0x15
 		MOV	R2, R0
 		MOV	R0, R4
-		BL	sub_FF8417D0
+		BL	sub_FF8417D0 	//related to Date Time String
+
 		MOV	R1, R6
 		MOV	R0, SP
 		MOV	R2, #0x160
 		LDR	R4, [R5]
 		BL	memcpy
 		LDMIA	R8, {R0-R3}
-		BL	sub_FF843DC8
+		BL	sub_FF843DC8 	// related to CF card Storage string
 		MOV	R1, #0x18
 		MOV	R2, R0
 		MOV	R0, R4
-		BL	sub_FF8417D0
+		BL	sub_FF8417D0 	// related to CF card storage string
+
 		MOV	R1, R10
 		MOV	R0, SP
 		MOV	R2, #0x164
@@ -686,28 +690,69 @@ loc_FF84E370:
 		MOV	R2, R0
 		MOV	R0, R4
 		BL	sub_FF8419F8
+
 		MOV	R1, R6
 		MOV	R0, SP
 		MOV	R2, #0x160
 		LDR	R4, [R5]
 		BL	memcpy
 		LDMIA	R8, {R0-R3}
-		BL	sub_FF842AE0
-		MOV	R1, #0x17
+		BL	sub_FF842AE0 	// related to parameter 
+		MOV	R1, #0x17 
 		MOV	R2, R0
 		MOV	R0, R4
 		BL	sub_FF8417D0
-		MOV	R1, R6
+
+		MOV	R1, R6 // START - add by cyrustam for Current Setting string
 		MOV	R0, SP
 		MOV	R2, #0x160
 		LDR	R4, [R5]
 		BL	memcpy
 		LDMIA	R8, {R0-R3}
-		BL	sub_FF843FE0
+		BL	my_GetCurSetString 	// 
+		MOV	R1, #0x10
+		MOV	R2, R0
+		MOV	R0, R4
+		BL	sub_FF8417D0 	 // END - add by cyrustam
+
+		MOV	R1, R6 // START - add by cyrustam for Color Temp String
+		MOV	R0, SP
+		MOV	R2, #0x160
+		LDR	R4, [R5]
+		BL	memcpy
+		LDMIA	R8, {R0-R3}
+		BL	my_GetColorTempString 	// 
+		MOV	R1, #0x14
+		MOV	R2, R0
+		MOV	R0, R4
+		BL	sub_FF8417D0 	 // END - add by cyrustam
+
+		MOV	R1, R6 // START - add by cyrustam for dynamic String
+		MOV	R0, SP
+		MOV	R2, #0x160
+		LDR	R4, [R5]
+		BL	memcpy
+		LDMIA	R8, {R0-R3}
+		BL	my_GetDynamicString 	// 
+		MOV	R1, #0x12
+		MOV	R2, R0
+		MOV	R0, R4
+		BL	sub_FF8417D0 	 // END - add by cyrustam
+
+		MOV	R1, R6 // start
+		MOV	R0, SP
+		MOV	R2, #0x160
+		LDR	R4, [R5]
+		BL	memcpy
+		LDMIA	R8, {R0-R3}
+		//BL	sub_FF843FE0 	// related to AEB
+		BL	my_GetAEBString 	// related to AEB
 		MOV	R1, #0xC
 		MOV	R2, R0
 		MOV	R0, R4
-		BL	sub_FF841ED0
+		//BL	sub_FF841ED0 	// related to AEB
+		BL	sub_FF8417D0 	// related to AEB // END
+
 		ADD	SP, SP,	#0x164
 		LDMFD	SP!, {R4-R8,R10,LR}
 		ADD	SP, SP,	#0x10
@@ -919,6 +964,7 @@ loc_FF84E798:
 		BL	sub_FF8432AC
 		MOVS	R0, R0,LSL#16
 		BEQ	loc_FF84E7F4
+
 		LDR	R3, =0x2304
 		MOV	R0, SP
 		ADD	R1, SP,	#0x198+0x174
@@ -927,11 +973,32 @@ loc_FF84E798:
 		BL	memcpy
 		ADD	R12, SP, #0x198+0x164
 		LDMIA	R12, {R0-R3}
-		BL	sub_FF843FE0
+		//BL	sub_FF843FE0
+		BL	my_GetAEBString
 		MOV	R1, #0xC
 		MOV	R2, R0
 		MOV	R0, R4
-		BL	sub_FF841ED0
+		//BL	sub_FF841ED0
+		BL	sub_FF8417D0
+
+		BL	my_GetCurSetString // start- add by cyrustam
+		MOV	R1, #0x10
+		MOV	R2, R0
+		MOV	R0, R4
+		BL	sub_FF8417D0 //end-add by cyrustam
+
+		BL	my_GetColorTempString // start- add by cyrustam
+		MOV	R1, #0x14
+		MOV	R2, R0
+		MOV	R0, R4
+		BL	sub_FF8417D0 //end-add by cyrustam
+
+		BL	my_GetDynamicString // start- add by cyrustam
+		MOV	R1, #0x12
+		MOV	R2, R0
+		MOV	R0, R4
+		BL	sub_FF8417D0 //end-add by cyrustam
+
 		MOV	R10, #1
 
 loc_FF84E7F4:

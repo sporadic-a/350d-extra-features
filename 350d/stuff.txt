@@ -1,0 +1,286 @@
+// all the functions etc from the original main.c that aren't used can be found here
+
+/*
+//void MyGlobalStdSet () {
+//	int f1 = -1;
+//	for (; f1 == -1; ) {
+//		f1 = FIO_OpenFile("A:/STDOUT.TXT", (O_CREAT | O_WRONLY), 0644);
+//		if (f1 == -1)
+//			SleepTask(100);
+//	}
+//	FIO_SeekFile(f1, 0, SEEK_END);
+//	ioGlobalStdSet(STD_OUT, f1);
+//}
+*/
+
+/*
+void PrintReleaseCount () {
+	int fout = FIO_OpenFile("A:/shutter.txt", (O_CREAT | O_WRONLY), 0644);
+	if (fout != -1) {
+		char* buf[64];
+//		FIO_SeekFile(fout, 0, SEEK_END);
+		sprintf(buf, "ReleaseCount:\t%d\n\r", releaseCount);
+		FIO_WriteFile(fout, buf, strlen(buf));
+		FIO_CloseFile(fout);
+	}
+}
+*/
+
+/*
+int dtoi(int dec)
+{
+   if (dec==48) { return 0; }
+   if (dec==49) { return 1; }
+   if (dec==50) { return 2; }
+   if (dec==51) { return 3; }
+   if (dec==52) { return 4; }
+   if (dec==53) { return 5; }
+   if (dec==54) { return 6; }
+   if (dec==55) { return 7; }
+   if (dec==56) { return 8; }
+   if (dec==57) { return 9; }
+}
+*/
+
+/*
+void customFunction(int clearCfn) {
+	if(clearCfn==0)
+	{
+  	   int fin = FIO_OpenFile("A:/config/cfn.txt", O_RDONLY , 0644);
+  	   if (fin != -1) 
+	   {
+		char buffer[7];
+		FIO_ReadFile(fin, buffer, 7);
+		SendToIntercom(0x30,1,dtoi((int)buffer[0])); // Flash
+		SleepTask(50);
+		SendToIntercom(0x32,1,dtoi((int)buffer[1])); // Bracket sequence/Auto Cancel
+		SleepTask(50);
+		SendToIntercom(0x33,1,dtoi((int)buffer[2])); //Superimposed Display
+		SleepTask(50);
+		SendToIntercom(0x34,1,dtoi((int)buffer[3])); // Menu Position
+		SleepTask(50);
+		SendToIntercom(0x39,1,dtoi((int)buffer[4])); //Safety Shift
+		SleepTask(50);
+		SendToIntercom(0x3a,1,dtoi((int)buffer[5])); // Lens AF stop button function
+		SleepTask(50);
+		SendToIntercom(0x3b,1,dtoi((int)buffer[6])); //Add original decision data
+		SleepTask(50);
+		FIO_CloseFile(fin);
+	   }
+	}
+	else
+	{
+		SendToIntercom(0x30,1,0);
+		SleepTask(50);
+		SendToIntercom(0x32,1,0);
+		SleepTask(50);
+		SendToIntercom(0x33,1,0);
+		SleepTask(50);
+		SendToIntercom(0x34,1,0);
+		SleepTask(50);
+		SendToIntercom(0x39,1,0);
+		SleepTask(50);
+		SendToIntercom(0x3a,1,0);
+		SleepTask(50);
+		SendToIntercom(0x3b,1,0);
+		SleepTask(50);
+	
+        }
+}
+*/
+
+/* void SwitchCfn(int button, int cfn) {
+        //int TmpVal = cameraMode.WB;
+   LEDBLUE = LEDON;
+   int upper;
+   int lower;
+   int TmpVal;
+   switch (cfn) 
+   { 
+      case 0x05:  // BSeq/AutoCancel
+      {
+        TmpVal = cameraMode.CfAebSeq;
+        upper=0x03;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x32, 1, TmpVal);
+      }
+      case 0x06:  // SI Display
+      {
+        TmpVal = cameraMode.CfSiIndicate;
+        upper=0x01;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x33, 1, TmpVal);
+      }
+
+      case 0x07:  // Menu Posi
+      {
+        TmpVal = cameraMode.CfMenuPos;
+        upper=0x02;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x34, 1, TmpVal);
+      }
+
+      case 0x08:  // Safety Shift
+      {
+        TmpVal = cameraMode.CfSafetyShift;
+        upper=0x01;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x39, 1, TmpVal);
+      }
+
+      case 0x09:  //Lens AF Button
+      {
+        TmpVal = cameraMode.CfLensButton;
+        upper=0x05;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x3a, 1, TmpVal);
+      }
+
+      case 0x0a:  // Add Decision Data
+      {
+        TmpVal = cameraMode.CfOriginalEval;
+        upper=0x01;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x3b, 1, TmpVal);
+      }
+
+      case 0x0b:  // Flash
+      {
+        TmpVal = cameraMode.CfEmitFlash;
+        upper=0x01;
+        lower=0x00;
+        switch (button) 
+        {
+                case BUTTON_LEFT:
+                {
+                        if(TmpVal==lower)
+                           break;
+			TmpVal=TmpVal-0x01;	
+                        break;
+                }
+                case BUTTON_RIGHT:
+                {
+                        if(TmpVal==upper)
+                           break;
+			TmpVal=TmpVal+0x01;	
+                        break;
+                }
+        }
+        SleepTask(50);
+        SendToIntercom(0x30, 1, TmpVal);
+      }
+
+   }
+
+        LEDBLUE = LEDOFF;
+}
+
+*/

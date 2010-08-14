@@ -4,7 +4,7 @@ void COPY() {
 	int i;
 	long* from	= (long*)0x800000;
 	long* to	= (long*)0x7f0000;
-	for (i = 0; i < 4000; i++)
+	for (i = 0; i < 4200; i++)
 		to[i] = from[i];
 }
 
