@@ -4,14 +4,14 @@ void COPY() {
 	int i;
 	long* from	= (long*)0x800000;
 	long* to	= (long*)0x7f0000;
-	for (i = 0; i < 4200; i++)
+	for (i = 0; i < 0x1400; i++)
 		to[i] = from[i];
 }
 
 extern void my_IntercomHandler();
 
 int my_InitializeIntercom() {
-	printf("InitializeIntercom\n");
+//	printf("InitializeIntercom\n");			//disabled by ck
 	InitIntercomData(my_IntercomHandler);
 	CreateIntercomSem();
 	return 0;

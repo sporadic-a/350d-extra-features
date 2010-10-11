@@ -1,0 +1,19 @@
+       camera menu position:
+SendToIntercom(0x2a,1,x);	1	Cf1 - SET button function			0: 0; 1: 1; 2: 2; 3: 3; 4: 4; 5: like 0
+SendToIntercom(0x2b,1,x);	2	Cf2 - automatic noise reduction		0: 0; 1: 1; 2: like 0
+SendToIntercom(0x2c,1,x);	3	Cf3 - Flash Sync time in Av mode	0: 0; 1: 1; 2, 3, 4, 5: like 1 but displays 0
+SendToIntercom(0x2d,1,x);	4	Cf4 - Shutter / save AE button
+SendToIntercom(0x2e,1,x);	5	Cf5 - AF helping light
+SendToIntercom(0x2f,1,x);	6	Cf6 - setting steps
+SendToIntercom(0x30,1,x);	-	Cf7 - Flash  0:On 1:Off
+SendToIntercom(0x31,1,x);	-	Cf8 - ISO Expansion  0:Off   1:On(Support ISO3200)
+SendToIntercom(0x32,1,x);	-	Cf9 - Bracket.sequence/Auto cancel.  0:0,-,+ (enabled)   1:0,-,+ (disabled) 2:-,0,+ (enabled)    3:-,0,+ (disabled)
+SendToIntercom(0x33,1,x);	-	Cf10 - SuperImposed Display(Red Spot in viewfinder)   0:On   1:Off
+SendToIntercom(0x34,1,x);	-	Cf11 - Menu Position   0:Previous (top if powered down) menu 1:Previous menu 2:Top menu
+SendToIntercom(0x35,1,x);	7	Cf12 - mirror lock up
+SendToIntercom(0x36,1,x);	-	Cf13 - focusing points selection method 0:normal, allows focusing points to be selected with the wheel; 1:wheel doesn't react, focusing points selection only via SET/arrow buttons; 2:doesn't allow selection at all; 3,4,5,6: like 1
+SendToIntercom(0x37,1,x);	8	Cf14 - Flash metering (E-TTL II)
+SendToIntercom(0x38,1,x);	9	Cf15 - Flash sync rear
+SendToIntercom(0x39,1,x);	-	Cf16 - Safety Shift   0:Off   1:On
+SendToIntercom(0x3a,1,x);	-	Cf17 - Lens AF button
+SendToIntercom(0x3b,1,x);	-	Cf18 - Add original decision data   0:Off   1:On
