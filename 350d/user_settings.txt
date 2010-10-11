@@ -11,7 +11,7 @@
 //#define LEDFLASH
 
 // TODO: enable/disable individual shortcuts, or at least shortcut schemes.
-/* Enable sortcuts ? */
+/* Enable shortcuts ? */
 #define SHORTCUTS
 
 /* Shortcut use signal */
@@ -21,6 +21,21 @@
 //#define SHORTCUTSIGNAL LEDRED=LEDON;SleepTask(500);LEDRED=LEDOFF;		// red LED lights up (time can be changed, is milliseconds)
 //#define SHORTCUTSIGNAL LEDBLUE=LEDON;SleepTask(50);LEDBLUE=LEDOFF;		// blue LED lights up (time can be changed, is milliseconds)
 
+
+//maximum value for menu option auto power off time in minutes
+#define AUTOPOWEROFFMAX 60
+
+//maximum value for menu option picture review time in seconds
+#define REVIEWTIMEMAX 30
+
+//want your camera to automatically set Flash Exposure Compensation to +-0 when it is turned on?
+#define RESETFLASHEXCOMP
+
+//switch SET and PLAY buttons in the TimeLapse and AFPointSets menu options
+//#define USEPLAYFORSET
+
+//disable settings file
+//#define NOSETTINGSFILE
 
 
 /*
@@ -32,51 +47,37 @@
 
 
 
-/* Default */
 
-#define POSITION_LAST		15
-
-
-#define POSITION_ISO		1
-#define POSITION_WB		2
-#define POSITION_CT		3
-#define POSITION_METERING	4
-#define POSITION_AEB		5
-#define POSITION_BSEQ		6
-#define POSITION_SI		7
-#define POSITION_MENU		8
-#define POSITION_SAFESHIFT	9
-#define POSITION_AFBUTTON	10
-#define POSITION_DATA		11
-#define POSITION_FLASH		12
-#define POSITION_COUNTER	13
-#define POSITION_TLAPSE		14
-#define POSITION_RAWMODE	15
+#define POSITION_LAST			23
 
 
+#define POSITION_ISO			1
+#define POSITION_WB			2
+#define POSITION_CT			3
+#define POSITION_METERING		4
+#define POSITION_AEB			5
+#define POSITION_BSEQ			6
+#define POSITION_SI			7
+#define POSITION_MENU			8
+#define POSITION_SAFESHIFT		9
+#define POSITION_AFBUTTON		10
+#define POSITION_DATA			11
+#define POSITION_FLASH			12
+#define POSITION_COUNTER		13
+#define POSITION_TLAPSE			14
+#define POSITION_AFPSELECTION		15
+#define POSITION_AFPOINTS_1		16
+#define POSITION_AFPOINTS_2		17
+#define POSITION_AFPOINTS_3		18
+#define POSITION_REVIEWTIME		19
+#define POSITION_AUTOPOWEROFF		20
+#define POSITION_FLASHEXCOMP		21
+#define POSITION_AVCOMP			22
+#define POSITION_FEB			23
 
 
-/* CK */
-/*
-#define POSITION_LAST		15
 
 
-#define POSITION_RAWMODE	1
-#define POSITION_AEB		2
-#define POSITION_BSEQ		3
-#define POSITION_ISO		4
-#define POSITION_WB			5
-#define POSITION_METERING	6
-#define POSITION_FLASH		7
-#define POSITION_SAFESHIFT	8
-#define POSITION_MENU		9
-#define POSITION_DATA		10
-#define POSITION_SI			11
-#define POSITION_AFBUTTON	12
-#define POSITION_TLAPSE		13
-#define POSITION_COUNTER	14
-#define POSITION_CT			15
-*/
 
 
 
@@ -91,3 +92,34 @@
 #define LEDSON ;
 #define LEDSOFF ;
 #endif
+
+#ifdef POSITION_AFPOINTS_1
+unsigned int AfPointSet1=1;
+#endif
+#ifdef POSITION_AFPOINTS_2
+unsigned int AfPointSet2=1;
+#endif
+#ifdef POSITION_AFPOINTS_3
+unsigned int AfPointSet3=1;
+#endif
+#ifdef POSITION_TLAPSE
+unsigned int TLapseInterval=10;
+unsigned int TLapseFrames=20;
+#endif
+#ifdef POSITION_RAWMODE
+int RawMode=1;
+int JpgQual=0;
+int JpgSize=0;
+#endif
+#ifdef POSITION_FLASHEXCOMP
+int fec=24;
+#endif
+#ifdef POSITION_AVCOMP
+int avc=24;
+#endif
+#ifdef POSITION_FEB
+int FebDiff=0;
+int FebDelay=3000;
+#endif
+
+

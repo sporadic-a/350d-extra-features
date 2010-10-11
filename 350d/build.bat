@@ -18,3 +18,4 @@ arm-elf-gcc -nostdlib -march=armv5te -fno-builtin -Wl,-T,link.script -o AUTOEXEC
 
 arm-elf-objcopy -O binary AUTOEXEC.arm.elf AUTOEXEC.BIN
 
+pause

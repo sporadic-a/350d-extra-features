@@ -18,6 +18,24 @@
 // ?0xbb:		AV+-
 // 0x90-0x93:	Mode Dial Tv Av M aDep
 
+not tested, but can 0x92 be 'close battery door' AND 'Mode dial "M"' at the same time?
+I also found the value for turning the wheel (but not for the turning direction), but lost my usb drive with that version of info.txt, gotta search again
+
+
+CHARSET
+
+the original menus are using loads of special characters in different languages. didn't yet find out how to use them for the info menu, too.
+
+camera follows ASCII charset from 0x20 to 0x7E
+
+0x00 - 0x1F and 0x7F display blanks
+
+0x80 - 0x88, 0xFF, 0x180, 0x1FF, 0x280: camera crashes.
+
+0x100 - 0x17F, 0x200 - 0x27F : camera behaves like 0x00 - 0x7F
+
+
+
 // 350D: 0x142b8  400D: 0x16b60
 // Camera Mode
 //---------------0x142b8 store value (same as 0x25E20 for 400D) ---------------------
@@ -157,10 +175,10 @@
 	// 0x06 -> Custom
 	// 0x07 -> Shade
 	// 0x08 -> Colour Temperature
-//SendToIntercom(0x6,1,1); //(0x6,1,0);  MF manual focus
-//SendToIntercom(0x7,1,1); // AF point selecttion: can extend some special:
-//7, 27, 41,47, 49, 73, 81,87, 97, 101, 105,113, 120,121, 116, 127, 135,
-//                                      139,165,168,169, 175, 185,
+//SendToIntercom(0x6,1,x); // 0:manual focus, 1:one shot, 2:ai servo, 3: ai focus
+
+//SendToIntercom(0x7,1,x); // AF point selection: please look at extra file af_points.txt
+
 // SendToIntercom(0x8,2,0x98); //Tv value: Set Tv to 1/4000
 /* Tv value table:
 30"	10
@@ -217,6 +235,12 @@
 4000	98
 */
 // SendToIntercom(0x9,2,1); //Av value:
+//SendToIntercom(0xA,1,1); //AV comp ex selecttion: can extend some special
+//SendToIntercom(0xB,1,1); // ISO set
+//SendToIntercom(0xC,1,1); // Red eye
+//SendToIntercom(0xD,1,1); //AEB BRK
+//SendToIntercom(0xE,1,1); //WB BRK
+//SendToIntercom(0xF,1,1); // Beep
 // SendToIntercom(0x10,2,0x00000708); //Colour Temperature:
 	//e.g. SendToIntercom(0x10,2,0x00000708) --> Set Colour Temp. to 2800K
 	//0x00000ed8  -->    3800K
@@ -225,16 +249,18 @@
 	//0x00002648  -->    9800K
 	//0x00002a30  -->    10800K
 	//0x00005140  -->    20800K
-//SendToIntercom(0xA,1,1); //AV comp ex selecttion: can extend some special
-//SendToIntercom(0xB,1,1); // ISO set
-//SendToIntercom(0xC,1,1); // Red eye
-//SendToIntercom(0xD,1,1); //AEB BRK
-//SendToIntercom(0xE,1,1); //WB BRK
-//SendToIntercom(0xF,1,1); // Beep
+0x12 auto power off
+0x14 review time
+0x15 auto rotate pictures
 //SendToIntercom(0x16,1,1); // LCDBrightness
 // SendToIntercom(0x1d, 4, 0x02020202 ); // change SET 1 to 2,2,2,2
 // SendToIntercom(0x1e, 4, 0x02020202 ); // change SET 2 to 2,2,2,2
 // SendToIntercom(0x1f, 4, 0x02020202 ); // change SET 3 to 2,2,2,2
+0x17 date format (DDMMYYYY, MMDDYYYY etc)
+0x19 file numbering
+0x1a video system
+0x1b communication
+0x1c parameter set
 
 //SendToIntercom(0x22,1,1); // RAW only, L+RAW, L only
 //SendToIntercom(0x23,1,1); // S,M,L. Combine no.34 to M+RAW OK, S+RAW not ok
@@ -256,15 +282,9 @@
 	//S+RAW Medium -> 3,2,1 (Not Work)
 	
 //SendToIntercom(43,1,1); // wb+-
-//SendToIntercom(0x2a-0x2f,1,1); // Cf1-->6
-// SendToIntercom(0x30,1,1); // Cf7 - Flash  0:On 1:Off
-// SendToIntercom(0x31,1,1); // Cf8 - ISO Expansion  0:Off   1:On(Support ISO3200)
-// SendToIntercom(0x32,1,1); // Cf9 - Bracket.sequence/Auto cancel.  0:0,-,+ (enabled)   1:0,-,+ (disabled) 2:-,0,+ (enabled)    3:-,0,+ (disabled)
-// SendToIntercom(0x33,1,1); // Cf10 - SuperImposed Display(Red Spot in viewfinder)   0:On   1:Off
-// SendToIntercom(0x34,1,1); // Cf11 - Menu Position   0:Previous (top if powered down) menu 1:Previous menu 2:Top menu
-                    35            12 mirror lock up
-// SendToIntercom(0x39,1,1); // Cf16 - Safety Shift   0:Off   1:On
-// SendToIntercom(0x3b,1,1); // Cf18 - Add original decision data   0:Off   1:On
+
+//SendToIntercom(0x2a-0x3b,1,x);		look at extra file custom_functions.txt
+
 //SendToIntercom(0x59,1,1); // Clear camera seting
 //SendToIntercom(0x61,1,1); // Start update firmware
 //SendToIntercom(0x6B,1,1); // Full CF viewfinder message

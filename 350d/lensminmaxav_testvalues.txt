@@ -1,0 +1,29 @@
+cameraMode.LensMinAv and cameraMode.LensMaxAv values:
+
+no lens attached:
+min: 0x16	max: 0x58
+
+EF 50mm 1:1.8 II (1.8-22)
+min: 0x16	max: 0x50
+
+EF 75-300mm 1:4-5.6 III USM @75mm (4.0-32)
+min: 0x29	max: 0x58
+
+EF 75-300mm 1:4-5.6 III USM @100mm (4.5-32)
+min: 0x2a	max: 0x59
+
+EF 75-300mm 1:4-5.6 III USM @120mm (4.5-36)
+min: 0x2b	max: 0x5a
+
+EF 75-300mm 1:4-5.6 III USM @135mm (5.0-36)
+min: 0x2c	max: 0x5b
+
+EF 75-300mm 1:4-5.6 III USM @200mm (5.0-40)
+min: 0x2e	max: 0x5d
+
+EF 75-300mm 1:4-5.6 III USM @250mm (5.6-40)
+min: 0x2f	max: 0x5e
+
+EF 75-300mm 1:4-5.6 III USM @300mm (5.6-45)
+min: 0x30	max: 0x5f
+

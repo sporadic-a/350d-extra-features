@@ -1,0 +1,387 @@
+autofocus points selection via
+SendToIntercom(7,1,x);
+
+obvious bit pattern is:
+
+00000001 1		center
+00000010 2		bottom
+00000100 4		top
+00001000 8		right
+00010000 0x10	left
+00100000 0x20	center right
+01000000 0x40	center left
+10000000 0x80	additional bit
+
+
+
+list of tested commands and selected AF points resulting, comments are highlighted with lots of Os not to be overlooked:
+
+SendToIntercom(7,1,0x00);
+    -  
+- - - - -
+    -
+ooooo
+no AF points are selected, camera wildly drives focus from one end to the other and back, then gives up
+ooooo
+
+
+SendToIntercom(7,1,0x01);
+    -  
+- - X - -
+    -
+
+SendToIntercom(7,1,0x02);
+    -  
+- - - - -
+    X
+
+SendToIntercom(7,1,0x03);
+    -  
+- - X - -
+    X
+
+SendToIntercom(7,1,0x04);
+    X  
+- - - - -
+    -
+
+SendToIntercom(7,1,0x05);
+    X  
+- - X - -
+    -
+
+SendToIntercom(7,1,0x06);
+    X  
+- - - - -
+    X
+
+SendToIntercom(7,1,0x07);
+    X  
+- - X - -
+    X
+
+SendToIntercom(7,1,0x08);
+    -  
+- - - - X
+    -
+
+SendToIntercom(7,1,0x09);
+    -  
+- - X - X
+    -
+
+SendToIntercom(7,1,0x0a);
+    -  
+- - - - X
+    X
+
+SendToIntercom(7,1,0x0b);
+    -  
+- - X - X
+    X
+
+SendToIntercom(7,1,0x0c);
+    X  
+- - - - X
+    -
+
+SendToIntercom(7,1,0x0d);
+    X  
+- - X - X
+    -
+
+SendToIntercom(7,1,0x0e);
+    X  
+- - - - X
+    X
+
+SendToIntercom(7,1,0x0f);
+    X  
+- - X - X
+    X
+
+SendToIntercom(7,1,0x10);
+    -  
+X - - - -
+    -
+
+SendToIntercom(7,1,0x11);
+    -  
+X - X - -
+    -
+
+SendToIntercom(7,1,0x12);
+    -  
+X - - - -
+    X
+
+SendToIntercom(7,1,0x13);
+    -  
+X - X - -
+    X
+
+SendToIntercom(7,1,0x14);
+    X  
+X - - - -
+    -
+
+SendToIntercom(7,1,0x15);
+    X  
+X - X - -
+    -
+
+SendToIntercom(7,1,0x16);
+    X  
+X - - - -
+    X
+
+SendToIntercom(7,1,0x17);
+    X  
+X - X - -
+    X
+
+SendToIntercom(7,1,0x18);
+    -  
+X - - - X
+    -
+
+SendToIntercom(7,1,0x19);
+    -  
+X - X - X
+    -
+
+SendToIntercom(7,1,0x1A);
+    -  
+X - - - X
+    X
+
+SendToIntercom(7,1,0x1B);
+    -  
+X - X - X
+    X
+
+SendToIntercom(7,1,0x1C);
+    X  
+X - - - X
+    -
+
+SendToIntercom(7,1,0x1D);
+    X  
+X - X - X
+    -
+
+SendToIntercom(7,1,0x1E);
+    X  
+X - - - X
+    X
+
+SendToIntercom(7,1,0x1F);
+    X  
+X - X - X
+    X
+
+SendToIntercom(7,1,0x20);
+    -  
+- - - X -
+    -
+
+SendToIntercom(7,1,0x21);
+    -  
+- - X X -
+    -
+
+SendToIntercom(7,1,0x22);
+    -  
+- - - X -
+    X
+
+SendToIntercom(7,1,0x23);
+    -  
+- - X X -
+    X
+
+SendToIntercom(7,1,0x24);
+    X  
+- - - X -
+    -
+
+SendToIntercom(7,1,0x25);
+    X  
+- - X X -
+    -
+
+SendToIntercom(7,1,0x26);
+    X  
+- - - X -
+    X
+
+SendToIntercom(7,1,0x27);
+    X  
+- - X X -
+    X
+
+SendToIntercom(7,1,0x28);
+    -  
+- - - X X
+    -
+
+SendToIntercom(7,1,0x29);
+    -  
+- - X X X
+    -
+
+SendToIntercom(7,1,0x2F);
+    X  
+- - X X X
+    X
+
+SendToIntercom(7,1,0x31);
+    -  
+X - X X -
+    -
+
+SendToIntercom(7,1,0x49);
+    -  
+- X X - X
+    -
+
+SendToIntercom(7,1,0x51);
+    -  
+X X X - -
+    -
+
+SendToIntercom(7,1,0x57);
+    X  
+X X X - -
+    X
+
+SendToIntercom(7,1,0x61);
+    -  
+- X X X -
+    -
+
+SendToIntercom(7,1,0x65);
+    X  
+- X X X -
+    -
+
+SendToIntercom(7,1,0x69);
+    -  
+- X X X X
+    -
+
+SendToIntercom(7,1,0x71);
+    -  
+X X X X -
+    -
+
+SendToIntercom(7,1,0x74);
+    X  
+X X - X -
+    -
+
+SendToIntercom(7,1,0x78);
+    -  
+X X - X X
+    -
+
+SendToIntercom(7,1,0x79);
+    -  
+X X X X X
+    -
+
+SendToIntercom(7,1,0x7F);
+    X  
+X X X X X
+    X
+	
+ooooo
+none light up at the beginning of focusing, but all are selected, similar to the behavior when all are selected on the normal way
+ooooo
+
+
+oooooooooo
+
+THEORY FOR BIT 8:
+
+The camera tries to hit one of the selected AF points, but also stops when any of the other points hits.
+
+oooooooooo
+
+
+
+SendToIntercom(7,1,0x80);
+    -  
+- - - - -
+    -
+ooooo
+camera behaves just like 0x7F
+ooooo
+
+
+SendToIntercom(7,1,0x81);
+    -  
+- - X - -
+    -
+
+SendToIntercom(7,1,0x82);
+    -  
+- - - - -
+    X
+
+SendToIntercom(7,1,0x83);
+    -  
+- - X - -
+    X
+
+SendToIntercom(7,1,0x84);
+    X  
+- - - - -
+    -
+
+SendToIntercom(7,1,0x85);
+    X  
+- - X - -
+    -
+
+SendToIntercom(7,1,0x86);
+    X  
+- - - - -
+    X
+
+SendToIntercom(7,1,0x87);
+    X  
+- - X - -
+    X
+	
+SendToIntercom(7,1,0x8B);
+    -  
+X X X X -
+    -
+
+SendToIntercom(7,1,0xA5);
+    X  
+- - X X -
+    -
+
+SendToIntercom(7,1,0xA8);
+    -  
+- - - X X
+    -
+
+SendToIntercom(7,1,0xA9);
+    -  
+- - X X X
+    -
+?
+	
+SendToIntercom(7,1,0xAF);
+    X  
+- - X X X
+    X
+?
+	
+SendToIntercom(7,1,0xB9);
+    -  
+X - X X X
+    -
