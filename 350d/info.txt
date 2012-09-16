@@ -129,6 +129,7 @@ camera follows ASCII charset from 0x20 to 0x7E
 // 0x02:        Metering mode                           oldVal,newVal
 // 0x02:        AF mode                                         oldVal,newVal?
 // 0x04:        Drive mode                                      oldVal,newVal
+// 0x07			AF Point										1, newval
 // 0x08:        Tv                                                      oldVal,newVal
 // 0x09:        Av                                                      oldVal,newVal
 // 0x0a:        AVComp value                            oldVal,newVal
