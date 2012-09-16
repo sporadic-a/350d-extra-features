@@ -16,9 +16,9 @@
 
 /* Shortcut use signal */
 //#define SHORTCUTSIGNAL;							// no notification
-#define SHORTCUTSIGNAL Beep(0);						// standard beep
+//#define SHORTCUTSIGNAL Beep(0);						// standard beep
 //#define SHORTCUTSIGNAL Beep(1);						// more noticeable and more annoying beep
-//#define SHORTCUTSIGNAL LEDRED=LEDON;SleepTask(500);LEDRED=LEDOFF;		// red LED lights up (time can be changed, is milliseconds)
+#define SHORTCUTSIGNAL LEDRED=LEDON;SleepTask(500);LEDRED=LEDOFF;		// red LED lights up (time can be changed, is milliseconds)
 //#define SHORTCUTSIGNAL LEDBLUE=LEDON;SleepTask(50);LEDBLUE=LEDOFF;		// blue LED lights up (time can be changed, is milliseconds)
 
 
@@ -34,9 +34,11 @@
 //switch SET and PLAY buttons in the TimeLapse and AFPointSets menu options
 //#define USEPLAYFORSET
 
+// only used in the FEB page so we can info jump as from other pages
+#define USEPLAYFORINFO
+
 //disable settings file
 //#define NOSETTINGSFILE
-
 
 /*
  * Menu item order.
@@ -44,20 +46,18 @@
  * MAKE SURE YOU UPDATE POSITION_LAST !!!
  */
 
-
-
-
-
-#define POSITION_LAST			23
-
+#if (1)
+#define POSITION_LAST			30
+#define MAX_PRESETS				30 // up to 99
+#define PRESET_EDITOR
 
 #define POSITION_ISO			1
-#define POSITION_WB			2
-#define POSITION_CT			3
+#define POSITION_WB				2
+#define POSITION_CT				3
 #define POSITION_METERING		4
 #define POSITION_AEB			5
 #define POSITION_BSEQ			6
-#define POSITION_SI			7
+#define POSITION_SI				7
 #define POSITION_MENU			8
 #define POSITION_SAFESHIFT		9
 #define POSITION_AFBUTTON		10
@@ -65,25 +65,83 @@
 #define POSITION_FLASH			12
 #define POSITION_COUNTER		13
 #define POSITION_TLAPSE			14
-#define POSITION_AFPSELECTION		15
+#define POSITION_AFPSELECTION	15
 #define POSITION_AFPOINTS_1		16
 #define POSITION_AFPOINTS_2		17
 #define POSITION_AFPOINTS_3		18
 #define POSITION_REVIEWTIME		19
-#define POSITION_AUTOPOWEROFF		20
-#define POSITION_FLASHEXCOMP		21
+#define POSITION_AUTOPOWEROFF	20
+#define POSITION_FLASHEXCOMP	21
 #define POSITION_AVCOMP			22
 #define POSITION_FEB			23
 
+#define POSITION_EAEB			24
+#define POSITION_RAWMODE		25
+#define POSITION_CONTRAST		26
+#define POSITION_SHARPNESS		27
+#define POSITION_SATURATION		28
+#define POSITION_COLORTONE		29
+#define POSITION_PRESETS		30
 
+#define INFOJUMPS_COUNT			4
+int INFOJUMPS[] = { POSITION_AFBUTTON, POSITION_AFPSELECTION, POSITION_FLASHEXCOMP, POSITION_CONTRAST };
 
+#else
 
+//
+// my settings
+//
 
+#define POSITION_LAST			30
+#define MAX_PRESETS				30 // up to 99
+#define PRESET_EDITOR
+#define ALT_EN_LABELS
 
+#define POSITION_ISO			1
+#define POSITION_WB				2
+#define POSITION_CT				3
+#define POSITION_METERING		4
+#define POSITION_AVCOMP			5
+#define POSITION_FLASHEXCOMP	6
 
+#define POSITION_CONTRAST		7
+#define POSITION_SHARPNESS		8
+#define POSITION_SATURATION		9
+#define POSITION_COLORTONE		10
 
+#define POSITION_PRESETS		11
+#define POSITION_RAWMODE		12
 
-/* Some code, PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING, THESE ARE NOT USER SETTINGS */
+#define POSITION_AEB			13
+#define POSITION_BSEQ			14
+#define POSITION_EAEB			15
+#define POSITION_FEB			16
+
+#define POSITION_TLAPSE			17
+#define POSITION_SAFESHIFT		18
+#define POSITION_FLASH			19
+#define POSITION_REVIEWTIME		20
+#define POSITION_AUTOPOWEROFF	21
+#define POSITION_SI				22
+#define POSITION_COUNTER		23
+#define POSITION_MENU			24
+
+#define POSITION_AFPSELECTION	25
+#define POSITION_AFPOINTS_1		26
+#define POSITION_AFPOINTS_2		27
+#define POSITION_AFPOINTS_3		28
+#define POSITION_AFBUTTON		29
+#define POSITION_DATA			30
+
+#define INFOJUMPS_COUNT			4
+int INFOJUMPS[] = { POSITION_CONTRAST, POSITION_PRESETS, POSITION_AEB, POSITION_TLAPSE };
+
+#endif
+
+//
+// Some code, PLEASE DON'T CHANGE ANYTHING BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING, 
+// THESE ARE NOT USER SETTINGS 
+//
 
 #ifdef LEDFLASH
 #define LEDSON LEDBLUE=LEDON;LEDRED=LEDON;
@@ -105,21 +163,35 @@ unsigned int AfPointSet3=1;
 #ifdef POSITION_TLAPSE
 unsigned int TLapseInterval=10;
 unsigned int TLapseFrames=20;
+#ifdef POSITION_TLAPSERAMP
+int TLapseRLevel=0;
+int TLapseRFrames=100;
+int TLapseRMax=6;
+#endif
 #endif
 #ifdef POSITION_RAWMODE
-int RawMode=1;
-int JpgQual=0;
-int JpgSize=0;
-#endif
-#ifdef POSITION_FLASHEXCOMP
-int fec=24;
-#endif
-#ifdef POSITION_AVCOMP
-int avc=24;
+int RawMode = 1;
+int JpgQual = 0;
+int JpgSize = 0;
 #endif
 #ifdef POSITION_FEB
-int FebDiff=0;
-int FebDelay=3000;
+int FebFrames = 3;
+int FebELevel = 1;
+#endif
+#ifdef POSITION_PRESETS
+int UserPreset = 1;
+#ifdef PRESET_EDITOR
+int EditorPos = 0;
+int EditorChar = 0;
+int EditorActive = 0;
+char EditorBuf[14];
+char EditorAlpha[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '/', '.', ' ' };
+char EditorAlphaSel[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '/', '.', '@' };
+#endif
+#endif
+#ifdef POSITION_EAEB
+int EaebFrames=3;
+int EaebELevel=1;
 #endif
 
 
