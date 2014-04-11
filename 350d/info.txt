@@ -236,7 +236,7 @@ camera follows ASCII charset from 0x20 to 0x7E
 4000	98
 */
 // SendToIntercom(0x9,2,1); //Av value:
-//SendToIntercom(0xA,1,1); //AV comp ex selecttion: can extend some special
+//SendToIntercom(0xA,1,1); //AV comp ex selection: can extend some special
 //SendToIntercom(0xB,1,1); // ISO set
 //SendToIntercom(0xC,1,1); // Red eye
 //SendToIntercom(0xD,1,1); //AEB BRK

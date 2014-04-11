@@ -1,0 +1,68 @@
+modded main.c by GezuS :
+------------------------
+SendToIntercom( int key, int old_val, int new_val)
+
+SendToIntercom(0x1c, 1, 5);	              // select Parameter BW 16,16,N,N
+SendToIntercom(0x20, 4, 0x00000000 );     // set Parameter BW to 0,0,N,N
+SendToIntercom(0x1c, 1, 4);               // select Parameter 3
+SendToIntercom(0x2b,1,x);	// enable/disable Noise Reduction (0=off 1=on)
+SendToIntercom(0x16,1,x);	// set LcdBrightness to 1,2,3,4,5
+							 
+// 0x1c:        SelectProcParam                 1,newVal
+// 0x1d:        SetProcParam: Set 1             4,newVal
+// 0x1e:        SetProcParam: Set 2             4,newVal
+// 0x1f:        SetProcParam: Set 3             4,newVal
+// 0x20:        SetProcParam: B/W               4,newVal
+
+int Parameter;				// 0x6c
+int ParaSetOne;				// 0x70
+int ParaSetTwo;				// 0x74
+int ParaSetThree;			// 0x78
+int ParaSetBW;				// 0x7c
+int CfNoiseReduction;		// 0xa8
+int LcdBrightness;			// 0x54
+
+--------------------------
+summary of Zestoi updates:
+
+* avcomp and fecomp now stay in sync with any changes u make in the camera via the normal menus
+   * also updated the code that displays in the top/left the current avcomp and bracketing to stay in sync
+
+* ported EAEB from cyrustam
+   * EAEB string looks as closely to the normal braketting string as poss like "-0.3 x7 +-0.7"
+   * fixed 2 second delay, blue led will flash 4 times before it starts
+   * LEFT/RIGHT change exposure level
+   * MENU/PLAY change how many frames to take
+
+* integrated some code from cyrustam's FEB code so u can select how many frames to take
+   * RIGHT/LEFT change exposure level
+   * MENU/PLAY change how many frames to take
+   * fixed 2 second delay now, blue led will flash 4 times before it starts
+   * FEB string looks as closely to the normal braketting string as poss like "-0.3 x7 +-0.7"
+
+* ported the color/saturation/sharpness/colortone code from cyrustam.
+  * only changes SET3
+  * limited the ranges to what seems to actually work
+  * LEFT/RIGHT to change value
+
+* enabled the picture quality settings
+   * with RAW selected will always save L images, but i like having the option to change from the INFO menu
+   * status display changed to look like "JPEG F L" etc
+   * LEFT cycle round Raw+JPEG, Raw, JPEG
+   * SET toggle between F and N
+   * RIGHT cycle round L, M, S
+
+* added presets go to presets menu and then:
+  * LEFT/RIGHT cycle thru presets
+  * SET to save current camera settings to preset.
+  * unnamed presets will look like "preset 8" if no preset saved yet or "preset 8*" if a preset exists
+  * PLAY loads a preset
+  * MENU to enter edit mode - blue led will light up
+     * press MENU again to cancel
+     * LEFT/RIGHT to change letter character to edit
+     * UP/DOWN to change the current character
+     * SET to save and exit edit mode
+  * you need to create a folder called "presets" in the root of your card. presets are named just via a number like "10" with "10.txt" containing the optional name that you can edit in a text editor if needed
+
+* multiple presses of INFO jump to different sections of options (apart from when an option itself needs the INFO button)
+  * to change where it jumps to edit these lines in user_settings.txt and recompile
