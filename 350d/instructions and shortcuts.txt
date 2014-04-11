@@ -1,0 +1,115 @@
+Shortcuts :
+-----------
+
+Quality menu (can be configured to be available via the SET button in the custom functions)
+zoom-out: af points set 1
+zoom-in: af points set 2
+direct-print: af points set 3
+
+ISO menu:
+zoom-out: ISO 100
+zoom-in: ISO 3200
+direct-print: ISO 400
+
+AF menu:
+zoom-out: Set Parameter B/W 0,0,N,N
+zoom-in: Set Parameter 3
+direct-print: LCD brightness switch level 1 to 5 (press direct-print button multiple times) 
+
+
+WB menu:
+zoom-out: Kelvin
+zoom-in: Auto BW
+direct-print: Custom WB (automatically picks the last image)
+
+
+measuring method menu:
+zoom-out: go to beep menu
+zoom-in: spot measurement
+direct-print: go to parameter menu
+
+
+beep menu:
+zoom-out: toggle flash on/off (red led flashes to show flash is enabled, blue led to show disabled)
+zoom-in: toggle safety shift on/off (red enabled, blue disabled)
+direct-print: toggle mirror lock-up (red enabled, blue disabled) 
+
+-------------------------------------------------------------------------------------------------------
+
+All features are accessed through the info button :
+---------------------------------------------------
+
+„1:ISO“ ISO-values from 100 to 3200 in 1/3 stops
+
+„2:WB“ white-balance (the original 8 plus ColorTemp)
+
+„3:CTemp“ custom color temp from 1800K to 11000K in 100K steps
+
+„4:Metering“ light metering, the original three (fullframe, center-weighted, partial) plus spot metering
+
+„5:AEB“ exposure bracketing from +-0 to 6.7 EV in +/- x.0, x.3, x.5, x.7, for x = {0..6}
+
+„6:CF-BSeq/AutoC“ bracketing sequence order (normal-under-over / under-normal-over) and
+autocancellation of bracketing on / off
+
+„7:CF-SI Disp.“ red focussing dots overlay on matt screen on / off
+
+„8:CF-Menu Posi.“ wether it should remember menu position after poweroff-on
+(the setting 'Top Menu' is faulty)
+
+„9:CF-Safe.Shift“ Av and Tv autoexpanding the given values - only if needed (if picture would
+otherwise be over- or underexposed)
+
+„10:CF-L.AFButt“ changes behaviour of AF-pushbutton on Canon L IS supertele (not the AF-switch on normal lens!)
+
+„11:CF-Decis.Da.“ saves plenty of additional numeric decision data and sensor values in RAW and JPEG-EXIF (only for special software)
+
+„12:CF-Flash“ switch flash on / off regardless of flash settings (either internal and flash socket)
+
+„13:Shutt.Count“ total shutter counts
+
+„14:TimeLapse“ Create pictures every [user set 1-999] sec.
+Example : 100 x 5s --- take 100 pictures at every 5 sec.
+Right – increase time by 1 sec
+Left – decrease time by 1 sec
+Play – increase # of pictures by 1
+Menu – double # of pictures (after like 10 million it goes back to 0)
+Set – start sequence
+
+„15:AFPSelection” how you can select the Auto Focus Point
+Standard : nothing changed from original set
+Wheel Off : you can NOT use the wheel when selecting AFP. You can still use
+the Up, Down Left and Right button + the presets for APF (eg. : set + zoom out)
+Blocked : You can only use the presets for APF (eg. : set + zoom out)
+
+„16:AFPoints 1” set the Auto Focus Point
+the AF helping light of my external flash doesn't work when you're using a set
+that is not standard.
+Use left/right in the info menu to move the cursor and set to activate/deactivate
+the selected points.
+If all points are selected in a set the menu will show TLLCRRB
+this stands for top, left, left-center, center, center-right, right, bottom.
+the point where the cursor is set to will be in lowercase. non-selected points will
+show a blank, with cursor set on them a @
+
+„17:AFPoints 2” see „16:AFPoints 1”
+
+„18:AFPoints 3” see „16:AFPoints 1”
+
+„19:Review time” of seconds picture will be displayed after taking it. This can now be set to 
+Hold : display image until any button pressed
+OFF: doesn’t display any image after picture was taken
+1 to 30 sec : display image for user set time --- the maximum values are user
+settable in the file user_settings.txt, they are not fixed to 30 s
+
+„20:AutoPowerOff” puts camera into sleep mode. This setting can be set to :
+Off: never goes into sleep mode
+1 to 60 min : goes into sleep mode after user set time (1 minute increments) ---
+the maximum values are user settable in the file user_settings.txt, they are not
+fixed to 60 min.
+
+„21:FlashExComp” Flash Exposure Compensation. This setting can be set to :
+-6 to +6 in 1/3 increments (standard was -2 to +2)
+
+“Flash Ex Bracketing” l/r:+- exposure menu/jump: +- time
+The menu will appear as usual, ISO, WB and metering settings won't show up in the menu structure, they show up in the small display and on the modified INFO screen only. Some edited values withstand battery removal and booting normally without prepared CF card, so don't be surprised.

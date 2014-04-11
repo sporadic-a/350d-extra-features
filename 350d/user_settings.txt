@@ -1,5 +1,9 @@
 /*
  * Canon EOS 350D firmware mod user settings file
+ * Modded by GezuS on 2014-01-14 : 
+ * Added "POSITION_BW" in Custom menu to switch between "Parameter 3" and "B/W"
+ *  and added "POSITION_BW" to preset config to remember
+ * Added "POSITION_NOISE" in Custom menu to enable/disable AutoNoiseReduction on Long Exposure
  */
 
 
@@ -18,8 +22,8 @@
 //#define SHORTCUTSIGNAL;							// no notification
 //#define SHORTCUTSIGNAL Beep(0);						// standard beep
 //#define SHORTCUTSIGNAL Beep(1);						// more noticeable and more annoying beep
-#define SHORTCUTSIGNAL LEDRED=LEDON;SleepTask(500);LEDRED=LEDOFF;		// red LED lights up (time can be changed, is milliseconds)
-//#define SHORTCUTSIGNAL LEDBLUE=LEDON;SleepTask(50);LEDBLUE=LEDOFF;		// blue LED lights up (time can be changed, is milliseconds)
+//#define SHORTCUTSIGNAL LEDRED=LEDON;SleepTask(500);LEDRED=LEDOFF;		// red LED lights up (time can be changed, is milliseconds)
+#define SHORTCUTSIGNAL LEDBLUE=LEDON;SleepTask(50);LEDBLUE=LEDOFF;		// blue LED lights up (time can be changed, is milliseconds)
 
 
 //maximum value for menu option auto power off time in minutes
@@ -47,44 +51,47 @@
  */
 
 #if (1)
-#define POSITION_LAST			30
-#define MAX_PRESETS				30 // up to 99
-#define PRESET_EDITOR
+#define POSITION_LAST			19
+#define MAX_PRESETS				18 // up to 99
+#define PRESET_EDITOR				
+#define ALT_EN_LABELS
 
 #define POSITION_ISO			1
-#define POSITION_WB				2
-#define POSITION_CT				3
+#define POSITION_WB			2
+#define POSITION_CT			3
 #define POSITION_METERING		4
-#define POSITION_AEB			5
-#define POSITION_BSEQ			6
-#define POSITION_SI				7
-#define POSITION_MENU			8
-#define POSITION_SAFESHIFT		9
-#define POSITION_AFBUTTON		10
-#define POSITION_DATA			11
-#define POSITION_FLASH			12
-#define POSITION_COUNTER		13
-#define POSITION_TLAPSE			14
-#define POSITION_AFPSELECTION	15
-#define POSITION_AFPOINTS_1		16
-#define POSITION_AFPOINTS_2		17
-#define POSITION_AFPOINTS_3		18
-#define POSITION_REVIEWTIME		19
-#define POSITION_AUTOPOWEROFF	20
-#define POSITION_FLASHEXCOMP	21
-#define POSITION_AVCOMP			22
-#define POSITION_FEB			23
-
-#define POSITION_EAEB			24
-#define POSITION_RAWMODE		25
-#define POSITION_CONTRAST		26
-#define POSITION_SHARPNESS		27
-#define POSITION_SATURATION		28
-#define POSITION_COLORTONE		29
-#define POSITION_PRESETS		30
+#define POSITION_FLASH		5
+//#define POSITION_BSEQ		6
+//#define POSITION_SI			7
+//#define POSITION_MENU		8
+#define POSITION_NOISE		6
+#define POSITION_SAFESHIFT		7
+//#define POSITION_AFBUTTON		10
+//#define POSITION_DATA		11
+//#define POSITION_AUTOPOWEROFF 	12
+//#define POSITION_REVIEWTIME	13
+//#define POSITION_TEST			7    // FACTORY_MODE !Dont'Use!
+#define POSITION_COUNTER 		8
+//#define POSITION_AFPSELECTION	15
+//#define POSITION_AFPOINTS_1	16
+//#define POSITION_AFPOINTS_2	17
+//#define POSITION_AFPOINTS_3	18
+//#define POSITION_RAWMODE		19
+#define POSITION_FLASHEXCOMP	9
+#define POSITION_FEB			10
+#define POSITION_AVCOMP		11
+#define POSITION_AEB			12
+#define POSITION_EAEB			13
+#define POSITION_TLAPSE		14
+#define POSITION_BW		15
+//#define POSITION_COLORTONE		15
+#define POSITION_SATURATION		16
+#define POSITION_SHARPNESS		17
+#define POSITION_CONTRAST		18
+#define POSITION_PRESETS		19
 
 #define INFOJUMPS_COUNT			4
-int INFOJUMPS[] = { POSITION_AFBUTTON, POSITION_AFPSELECTION, POSITION_FLASHEXCOMP, POSITION_CONTRAST };
+int INFOJUMPS[] = {  POSITION_ISO, POSITION_CT, POSITION_EAEB, POSITION_PRESETS };
 
 #else
 

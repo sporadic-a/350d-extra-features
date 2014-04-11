@@ -15,7 +15,7 @@ void COPY() {
 extern void my_IntercomHandler();
 
 int my_InitializeIntercom() {
-//	printf("InitializeIntercom\n");			//disabled by ck
+	printf("InitializeIntercom\n");			//disabled by ck
 	InitIntercomData(my_IntercomHandler);
 	CreateIntercomSem();
 	return 0;

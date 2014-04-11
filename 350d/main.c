@@ -2,6 +2,12 @@
  * EOS 350D mod project
  * Original work by maiohwmai and cyrustam
  * Further mods by crazyklaus, MilanC and zestoi
+ * Modded by GezuS on 2014-01-14 : 
+ * "Black&White 0,0,N,N" shortcut and "Parameter 3" shortcut in AF menu 
+ * "POSITION_BW" added in Custom menu to switch between "B/W" and "Parameter 3"
+ * "POSITION_NOISE" added in Custom menu to enable/disable Automatic Noise Reduction
+ * Added "POSITION_BW" and "POSITION_NOISE" to preset config to have them load/save with presets
+ * Added Function to switch LCD brightness level 1 to 5 (AF menu, then press direct-print button multiple times) 
  */
 
 #include "headers.h"
@@ -145,7 +151,7 @@ void ReadSettings(){}
 void WriteSettings(){}
 #else
 void ReadSettings(){
-	int settings = FIO_OpenFile("A:/settings", O_RDONLY, 644);
+	int settings = FIO_OpenFile("A:/config/settings", O_RDONLY, 644);
 	if(settings != -1) {
 		itmp = FIO_ReadFile(settings, (char *)buff2, sizeof(int)*5);
 		#ifdef POSITION_AFPOINTS_1
@@ -166,7 +172,7 @@ void ReadSettings(){
 }
 
 void WriteSettings(){
-	int settings = FIO_OpenFile("A:/settings", O_CREAT|O_WRONLY , 644);
+	int settings = FIO_OpenFile("A:/config/settings", O_CREAT|O_WRONLY , 644);
 	if(settings != -1) {
 		#ifdef POSITION_AFPOINTS_1
 		buff2[0]= AfPointSet1;
@@ -1151,6 +1157,18 @@ void SwitchPresets(int button) {
 	
 				buff2[32] = cameraMode.DriveMode;
 				buff2[33] = cameraMode.AfPoint;
+				
+				#ifdef POSITION_BW
+					buff2[34] = cameraMode.Parameter;
+				#else
+					buff2[34] = 4;		//Parameter 3
+				#endif
+				
+				#ifdef POSITION_NOISE
+					buff2[35] =	cameraMode.CfNoiseReduction;
+				#else
+					buff2[35] = 0;		//Off
+				#endif
 	
 				FIO_WriteFile(itmp, buff2, sizeof(buff2));
 				FIO_CloseFile(itmp);
@@ -1167,7 +1185,7 @@ void SwitchPresets(int button) {
 	
 				LEDBLUE=LEDON;
 	
-				for (itmp2=0; itmp2<34; itmp2++) {
+				for (itmp2=0; itmp2<36; itmp2++) {
 					buff2[itmp2] = 0;
 				}
 	
@@ -1204,7 +1222,7 @@ void SwitchPresets(int button) {
 				cameraMode.CfEmitFlash = buff2[21];
 				cameraMode.ParaSetOne = buff2[22];
 				cameraMode.ParaSetTwo = buff2[23];
-	
+				
 				// iso
 				itmp = buff2[8];
 				eventproc_SetIsoValue(&itmp);
@@ -1227,7 +1245,18 @@ void SwitchPresets(int button) {
 					EaebFrames = buff2[27];
 					EaebELevel = buff2[28];
 				#endif
-	
+				
+				#ifdef POSITION_BW
+				//	cameraMode.Parameter = buff2[34];
+					SendToIntercom(0x1c, 1, buff2[34]);	      // select Parameter BW
+				//	SendToIntercom(0x20, 4, 0x00000000 );     // set Parameter BW to 0,0,N,N
+				#endif
+				
+				#ifdef POSITION_NOISE
+				//	cameraMode.CfNoiseReduction = buff2[35];
+					SendToIntercom(0x2b, 1, buff2[35]);
+				#endif
+					
 				// av
 				SendToIntercom(0x9, 1, buff2[29]);
 	
@@ -1398,6 +1427,20 @@ const char* my_GetDynamicString() {
 				default: return "immer Menue 1";
 			}
 #endif
+#ifdef POSITION_BW
+		case POSITION_BW-1:
+			switch(cameraMode.Parameter){
+				case 4: return "Standard";
+				case 5: return "B/W";
+			}
+#endif
+#ifdef POSITION_NOISE
+		case POSITION_NOISE-1:
+			if (cameraMode.CfNoiseReduction) 
+				return "Aus";
+			else
+				return "Ein";
+#endif
 #ifdef POSITION_SAFESHIFT
 		case POSITION_SAFESHIFT-1:
 			if (cameraMode.CfSafetyShift) 
@@ -1562,6 +1605,12 @@ const char* my_GetCurSetString() {
 #ifdef POSITION_MENU
 		case POSITION_MENU-1: return "Menue-Position";
 #endif
+#ifdef POSITION_BW
+		case POSITION_BW-1: return "B/W";
+#endif
+#ifdef POSITION_NOISE
+		case POSITION_NOISE-1: return "Noise";
+#endif
 #ifdef POSITION_SAFESHIFT
 		case POSITION_SAFESHIFT-1: return "AutoKorr Av/Tv";
 #endif
@@ -1698,6 +1747,20 @@ const char* my_GetDynamicString() {
 				case 1: return "Previous";
 				default: return "Top Menu";
 			}
+#endif
+#ifdef POSITION_BW
+		case POSITION_BW-1:
+			switch(cameraMode.Parameter){
+				case 4: return "Parameter 3";
+				case 5: return "B/W";
+			}
+#endif
+#ifdef POSITION_NOISE
+		case POSITION_NOISE-1:
+			if (cameraMode.CfNoiseReduction) 
+				return "On";
+			else
+				return "Off";
 #endif
 #ifdef POSITION_SAFESHIFT
 		case POSITION_SAFESHIFT-1:
@@ -1876,9 +1939,23 @@ const char* my_GetCurSetString() {
 		case POSITION_MENU-1: return QUOTE(POSITION_MENU)":CF-Menu Posi.";
 #endif
 #endif
+#ifdef POSITION_BW
+#ifdef ALT_EN_LABELS
+		case POSITION_BW-1: return QUOTE(POSITION_BW)":Black/White";
+#else
+		case POSITION_BW-1: return QUOTE(POSITION_BW)":B/W";
+#endif
+#endif
+#ifdef POSITION_NOISE
+#ifdef ALT_EN_LABELS
+		case POSITION_NOISE-1: return QUOTE(POSITION_NOISE)":Noise Red";
+#else
+		case POSITION_NOISE-1: return QUOTE(POSITION_NOISE)":Noise";
+#endif
+#endif
 #ifdef POSITION_SAFESHIFT
 #ifdef ALT_EN_LABELS
-		case POSITION_SAFESHIFT-1: return QUOTE(POSITION_SAFESHIFT)":Safety Shft";
+		case POSITION_SAFESHIFT-1: return QUOTE(POSITION_SAFESHIFT)":Safe Shift";
 #else
 		case POSITION_SAFESHIFT-1: return QUOTE(POSITION_SAFESHIFT)":CF-Safe.Shift";
 #endif
@@ -2072,9 +2149,10 @@ void MyTask() {
 								break;
 
 							// ...AF menu
-							case 4: 									
-								// set LCD brightness to min
-								SendToIntercom(0x16, 1, 1);					
+							case 4: 		
+								// select Parameter B/W and set BW 0,0,N,N
+								SendToIntercom(0x1c, 1, 5);		// select Parameter BW 16,16,N,N
+								SendToIntercom(0x20, 4, 0x00000000 ); // set Parameter BW to 0,0,N,N
 								break;
 
 							// ...metering menu
@@ -2146,9 +2224,9 @@ void MyTask() {
 								break;
 
 							// ...AF menu
-							case 4:										
-								// set LCD brightness to max
-								SendToIntercom(0x16, 1, 5);					
+							case 4:		
+								// set Parameter 3 
+								SendToIntercom(0x1c, 1, 4);					
 								break;
 
 							// ...metering menu
@@ -2214,9 +2292,12 @@ void MyTask() {
 							break;
 
 						// ...AF menu
-						case 4:											
-							//set LCD brightness to 3
-							SendToIntercom(0x16,1,3);						
+						case 4:												
+							//Rotate LCD brightness 1,2,3,4,5 (NEW)	
+							if (cameraMode.LcdBrightness>=5)
+								SendToIntercom(0x16,1,1);
+							else
+								SendToIntercom(0x16,1,(cameraMode.LcdBrightness+1));
 							break;
 
 						// ...metering menu
@@ -2375,6 +2456,21 @@ void MyTask() {
 							SendToIntercom(0xd,1,cameraMode.Aeb);
 							break;
 #endif
+#ifdef POSITION_BW
+						//Black and White Select Parameter (switch between "Parameter 3" and "B/W")
+						case POSITION_BW-1: 
+							SendToIntercom(0x1c, 1, CfnVal(pMessage[1],cameraMode.Parameter,5,4));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+#ifdef POSITION_NOISE
+						//Automatic Noise Reduction (Cf2)
+						case POSITION_NOISE-1: 
+							SendToIntercom(0x2b, 1, ToggleCfnVal(pMessage[1],cameraMode.CfNoiseReduction));
+							SendToIntercom(0xd,1,cameraMode.Aeb);
+							break;
+#endif
+
 #ifdef POSITION_SAFESHIFT
 						//Safety Shift
 						case POSITION_SAFESHIFT-1: 
