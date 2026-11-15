@@ -1,0 +1,13 @@
+# macOS Finder metadata.
+**/.DS_Store
+
+# Local scratch space for downloaded release archives before they are
+# committed as releases.
+temp/
+
+# Build outputs. Released binaries are kept in releases/; anything built
+# locally in the code folders stays out of `git status`.
+*.o
+*.elf
+*.exec
+350d/AUTOEXEC.BIN
