@@ -120,12 +120,28 @@ start.
 
 ## Build Chain
 
-You need an `arm-elf` cross-compiler, GCC 3.4.6 with binutils. In
-the forums thread this toolchain was distributed as a Windows package,
-`gcc346.zip`, with each release unpacked into its `myproject/` folder.
-That package hasn't survived.
+A build from a current toolchain hasn't been run on a camera yet. The
+`350d` Makefile uses the GNU Arm Embedded toolchain (`arm-none-eabi`), and
+builds cleanly with GCC 13.2. On Debian or Ubuntu:
 
-Builds from other toolchains haven't been tested.
+```sh
+sudo apt install --no-install-recommends gcc-arm-none-eabi make
+```
+
+No C library is needed: the code calls the camera firmware's own
+routines.
+
+The forum releases were built with an `arm-elf` cross-compiler, GCC 3.4.6
+with binutils. In the forum thread it was distributed as a Windows
+package, `gcc346.zip`, with each release unpacked into its `myproject/`
+folder. That package hasn't survived; with a copy of it,
+`make CROSS=arm-elf-` builds with it.
+
+The two toolchains generate different code for calls into the firmware.
+GCC 3.4.6 builds call addresses like `0xFF810000` with a direct `BL`,
+which reaches them by wrapping around the 32-bit address space. Current
+binutils doesn't wrap, so it routes each call through a two-word stub
+that jumps to the same address, adding about 2.5 KB.
 
 ## `350d`:
 
@@ -167,9 +183,10 @@ build time in `user_settings.txt`.
      their confirmation signal, and `USEPLAYFORSET`, which starts the
      timelapse and AF point sets with PLAY instead of SET (SET does
      nothing when custom function 1 is set to 0; see post #254).
-2. Put `arm-elf-gcc` on your `PATH` and run `make`, which should produce
-   `AUTOEXEC.BIN`. On Windows, `build.bat` expects the folder to sit at
-   `gcc346\myproject\<name>`.
+2. Install the toolchain (see [Build Chain](#build-chain)) and run `make`
+   to produce `AUTOEXEC.BIN`. It stops with an error, and deletes the
+   file, if the binary is over the size limit below. On Windows,
+   `build.bat` expects the folder to sit at `gcc346\myproject\<name>`.
 
 `link.script` places the code at `0x7F0000`. `init.c` then copies 8000
 words (32,000 bytes) from the load address to that location. A build
