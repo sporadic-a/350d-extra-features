@@ -187,6 +187,11 @@ build time in `user_settings.txt`.
    to produce `AUTOEXEC.BIN`. It stops with an error, and deletes the
    file, if the binary is over the size limit below. On Windows,
    `build.bat` expects the folder to sit at `gcc346\myproject\<name>`.
+3. To keep a build, run `make release`. It copies `AUTOEXEC.BIN` into a
+   new folder, `releases/<date>-<commit>/`, with `-dirty` added to the
+   commit if there are uncommitted changes. If that folder already
+   exists, it stops rather than overwrite it; commit, or wait a day, to
+   release again.
 
 `link.script` places the code at `0x7F0000`. `init.c` then copies 8000
 words (32,000 bytes) from the load address to that location. A build
@@ -204,6 +209,9 @@ order set by `user_settings.txt`, comes from the #482 source, so it was
 very likely built from it. Without the original GCC 3.4.6 toolchain the
 two can't be compared byte for byte, so rebuild from source if you need a
 binary that is known to match the code.
+
+Folders named `releases/<date>-<commit>/` are local builds from
+`make release`, not forum releases.
 
 ## `bootflag`:
 

@@ -28,6 +28,16 @@ $(name).BIN: $(name).arm.elf
 	test $$(wc -c < $@) -le 32000
 #	cp $(name).BIN I:\\$(name).BIN
 
+# Copy the card binary into a new releases/ folder named by date and
+# commit, with -dirty added when there are uncommitted changes. mkdir fails
+# if the folder already exists, so an earlier release is never overwritten.
+reldir = ../releases/$(shell date +%Y-%m-%d)-$(shell git describe --always --dirty)
+
+.PHONY: release
+release: $(name).BIN
+	mkdir $(reldir)
+	cp $(name).BIN $(reldir)/
+
 # link.script is a prerequisite so that editing it relinks, but it reaches
 # ld only through -T: current ld rejects a script given twice.
 $(name).arm.elf:entry.o entry_subs.o gui.o init.o main.o link.script
