@@ -2097,7 +2097,9 @@ void MyTask() {
 	//after the initialisations are done, do this forever
 	while (1) {									
 	
-		int* pMessage = (int*)MainHeapAlloc(sizeof(int) * 2);
+		// Receives a message allocated by SendMyMessage; this loop owns it
+		// and frees it once handled.
+		int* pMessage = 0;
 		//	TryReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0);
 		ReceiveMessageQueue(hMyTaskMessQue, &pMessage, 0); 		
 		
@@ -2673,10 +2675,14 @@ void CreateMyTask() {
 
 void SendMyMessage(int param0, int param1) {
 	int* pMessage = (int*)MainHeapAlloc(sizeof(int) * 2);
+	if (!pMessage)
+		return;
 	pMessage[0] = param0;
 	pMessage[1] = param1;
-	TryPostMessageQueue(hMyTaskMessQue, pMessage, 0);
-	MainHeapFree(pMessage);
+	// MyTask takes ownership of a posted message and frees it. A rejected
+	// post (non-zero result, e.g. a full queue) is freed here instead.
+	if (TryPostMessageQueue(hMyTaskMessQue, pMessage, 0))
+		MainHeapFree(pMessage);
 }
 
 void my_IntercomHandler(int r0, char* ptr) {
