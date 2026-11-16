@@ -11,3 +11,4 @@ temp/
 *.elf
 *.exec
 350d/AUTOEXEC.BIN
+350d/addon_size.stamp

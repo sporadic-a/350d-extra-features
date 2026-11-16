@@ -17,6 +17,13 @@
 #define STD_OUT			1
 #define STD_ERR			2
 
+// The firmware's own C library routines, at the addresses in funclist.txt.
+extern int printf(const char* fmt, ...);
+extern int sprintf(char* buf, const char* fmt, ...);
+extern char* strcpy(char* dst, const char* src);
+extern int strcmp(const char* a, const char* b);
+extern unsigned int strlen(const char* s);
+
 extern int FIO_OpenFile(const char* name, int flags, int mode);
 extern int FIO_CreateFile(const char* name, int flags);
 extern int FIO_RemoveFile(const char* name);
