@@ -120,12 +120,28 @@ start.
 
 ## Build Chain
 
-You need an `arm-elf` cross-compiler, GCC 3.4.6 with binutils. In
-the forums thread this toolchain was distributed as a Windows package,
-`gcc346.zip`, with each release unpacked into its `myproject/` folder.
-That package hasn't survived.
+A build from a current toolchain hasn't been run on a camera yet. The
+`350d` Makefile uses the GNU Arm Embedded toolchain (`arm-none-eabi`), and
+builds cleanly with GCC 13.2. On Debian or Ubuntu:
 
-Builds from other toolchains haven't been tested.
+```sh
+sudo apt install --no-install-recommends gcc-arm-none-eabi make
+```
+
+No C library is needed: the code calls the camera firmware's own
+routines.
+
+The forum releases were built with an `arm-elf` cross-compiler, GCC 3.4.6
+with binutils. In the forum thread it was distributed as a Windows
+package, `gcc346.zip`, with each release unpacked into its `myproject/`
+folder. That package hasn't survived; with a copy of it,
+`make CROSS=arm-elf-` builds with it.
+
+The two toolchains generate different code for calls into the firmware.
+GCC 3.4.6 builds call addresses like `0xFF810000` with a direct `BL`,
+which reaches them by wrapping around the 32-bit address space. Current
+binutils doesn't wrap, so it routes each call through a two-word stub
+that jumps to the same address, adding about 2.5 KB.
 
 ## `350d`:
 
@@ -167,9 +183,14 @@ build time in `user_settings.txt`.
      their confirmation signal, and `USEPLAYFORSET`, which starts the
      timelapse and AF point sets with PLAY instead of SET (SET does
      nothing when custom function 1 is set to 0; see post #254).
-2. Put `arm-elf-gcc` on your `PATH` and run `make`, which should produce
-   `AUTOEXEC.BIN`. On Windows, `build.bat` expects the folder to sit at
-   `gcc346\myproject\<name>`.
+2. Install the toolchain (see [Build Chain](#build-chain)) and run `make`
+   to produce `AUTOEXEC.BIN`. It stops with an error, and deletes the
+   file, if the binary is over the size limit below.
+3. To keep a build, run `make release`. It copies `AUTOEXEC.BIN` into a
+   new folder, `releases/<date>-<commit>/`, with `-dirty` added to the
+   commit if there are uncommitted changes. If that folder already
+   exists, it stops rather than overwrite it; commit, or wait a day, to
+   release again.
 
 `link.script` places the code at `0x7F0000`. `init.c` then copies 8000
 words (32,000 bytes) from the load address to that location. A build
@@ -188,6 +209,9 @@ very likely built from it. Without the original GCC 3.4.6 toolchain the
 two can't be compared byte for byte, so rebuild from source if you need a
 binary that is known to match the code.
 
+Folders named `releases/<date>-<commit>/` are local builds from
+`make release`, not forum releases.
+
 ## `bootflag`:
 
 You run `bootflg2.fir` once from the camera's *Firmware update* menu. It
@@ -203,11 +227,18 @@ blue LEDs, to confirm that the camera booted from the card
 
 ### building
 
-`make all` should build `bootflg2.bin` and the LED test. `decrypt20D.exe`, a
-Windows tool, then turns `bootflg2.bin` into `bootflg2.fir`. On Windows,
-`ReadMe.txt` says to put the folder at `gcc346\myproject\bootflg2\` and
-run `build.bat`. The Makefiles and sources for the earlier `scanled` and
-`bootflag` versions are in their own commits, for example
+Use the committed `bootflg2.fir`; don't rebuild it. This is the program
+that writes to the camera's flash, and the committed file is the one
+people have run on their cameras. Building it with modern toolchains is
+untested.
+
+The source, `bootflg2.c`, is kept for reference. Its Makefile is the
+forum's original, written for the old `arm-elf` toolchain (GCC 3.4.6),
+and `decrypt20D.exe`, a Windows tool, turned `bootflg2.bin` into
+`bootflg2.fir`. On Windows, `ReadMe.txt` says to put the folder at
+`gcc346\myproject\bootflg2\` and run `build.bat`. The Makefiles and
+sources for the earlier `scanled` and `bootflag` versions are in their
+own commits, for example
 `git show maiohwmai/bootflag-toggle:bootflag/Makefile`.
 
 ## How the forum's history was captured into a Git repo
