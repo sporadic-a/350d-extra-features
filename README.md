@@ -192,10 +192,17 @@ build time in `user_settings.txt`.
    exists, it stops rather than overwrite it; commit, or wait a day, to
    release again.
 
-`link.script` places the code at `0x7F0000`. `init.c` then copies 8000
-words (32,000 bytes) from the load address to that location. A build
-larger than that crashes the camera (Err 99) until you raise the count in
-`init.c` (see posts #204 and #409).
+The add-on reserves the top `ADDON_SIZE` bytes (32,000 by default) of
+Canon's main heap, which Canon sets up from `0x200000` to `0x800000`. It
+runs directly below `0x800000`, where the camera loads `AUTOEXEC.BIN`.
+`init.c` copies it there at startup, and `entry.S` ends the heap where the
+add-on begins, so the firmware never hands out its memory. A binary
+larger than `ADDON_SIZE` would crash the camera (Err 99), so `make`
+refuses to produce one. To make room, build with
+`make ADDON_SIZE=<bytes>` (a multiple of 4). `make check` confirms that
+the link address, the copy and the heap's end all agree. Older builds ran
+at `0x7F0000`, inside the heap. The reserved heap hasn't been tested on a
+camera yet.
 
 #### prebuilt binaries
 

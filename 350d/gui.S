@@ -1,3 +1,8 @@
+// This code only works at the address it is linked for (ADDON_BASE in the
+// Makefile), because it gives Canon's firmware absolute addresses of
+// add-on functions to call back: LDR R0, =my_IDLEHandler and
+// LDR R0, =my_UpdateInfoDlgProc.
+
 	.text
 	.org 0
 	.globl my_GUIInit, my_ShowInfoCreativeDlg

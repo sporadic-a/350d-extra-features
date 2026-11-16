@@ -1,3 +1,8 @@
+// This code only works at the address it is linked for (ADDON_BASE in the
+// Makefile), because it gives absolute addresses of add-on code to the CPU
+// and to Canon's firmware: LDR PC, =my_romStart, LDR R0, =my_usrRoot and
+// LDR R3, =my_task_Startup.
+
 	.text
 	.org 0
 	.globl _start, start
@@ -277,7 +282,10 @@ my_taskcreate_Startup:
 //		LDR	LR, [SP],#0x4
 //		B	loc_FF811508
 		STR	LR, [SP,#-0x4]!
-		MOV	R1, #0x800000
+		// End Canon's main heap where the add-on starts, so the heap
+		// never hands out the add-on's memory. Canon's own end is
+		// 0x800000.
+		LDR	R1, =ADDON_BASE
 		MOV	R0, #0x200000
 		SUB	SP, SP, #4
 		BL	CreateMainHeap
