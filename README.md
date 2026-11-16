@@ -185,8 +185,7 @@ build time in `user_settings.txt`.
      nothing when custom function 1 is set to 0; see post #254).
 2. Install the toolchain (see [Build Chain](#build-chain)) and run `make`
    to produce `AUTOEXEC.BIN`. It stops with an error, and deletes the
-   file, if the binary is over the size limit below. On Windows,
-   `build.bat` expects the folder to sit at `gcc346\myproject\<name>`.
+   file, if the binary is over the size limit below.
 3. To keep a build, run `make release`. It copies `AUTOEXEC.BIN` into a
    new folder, `releases/<date>-<commit>/`, with `-dirty` added to the
    commit if there are uncommitted changes. If that folder already
@@ -228,11 +227,18 @@ blue LEDs, to confirm that the camera booted from the card
 
 ### building
 
-`make all` should build `bootflg2.bin` and the LED test. `decrypt20D.exe`, a
-Windows tool, then turns `bootflg2.bin` into `bootflg2.fir`. On Windows,
-`ReadMe.txt` says to put the folder at `gcc346\myproject\bootflg2\` and
-run `build.bat`. The Makefiles and sources for the earlier `scanled` and
-`bootflag` versions are in their own commits, for example
+Use the committed `bootflg2.fir`; don't rebuild it. This is the program
+that writes to the camera's flash, and the committed file is the one
+people have run on their cameras. Building it with modern toolchains is
+untested.
+
+The source, `bootflg2.c`, is kept for reference. Its Makefile is the
+forum's original, written for the old `arm-elf` toolchain (GCC 3.4.6),
+and `decrypt20D.exe`, a Windows tool, turned `bootflg2.bin` into
+`bootflg2.fir`. On Windows, `ReadMe.txt` says to put the folder at
+`gcc346\myproject\bootflg2\` and run `build.bat`. The Makefiles and
+sources for the earlier `scanled` and `bootflag` versions are in their
+own commits, for example
 `git show maiohwmai/bootflag-toggle:bootflag/Makefile`.
 
 ## How the forum's history was captured into a Git repo
